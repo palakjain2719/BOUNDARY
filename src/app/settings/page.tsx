@@ -4,7 +4,8 @@ import { ActionButton } from "@/components/match/ActionButton";
 import { ImportForm } from "@/components/settings/ImportForm";
 import { NotificationForm } from "@/components/settings/NotificationForm";
 import { getSessionUser } from "@/lib/auth";
-import { env, integrationStatuses } from "@/lib/env";
+import { env } from "@/lib/env";
+import { runIntegrationChecks } from "@/lib/health";
 import { formatClock, relativeTo } from "@/lib/format";
 import { listTeamRules } from "@/lib/optimizer/rules";
 import { clockMode, getClock } from "@/lib/pipeline/clock";
@@ -18,10 +19,10 @@ export const metadata: Metadata = { title: "Settings & admin" };
 export const dynamic = "force-dynamic";
 
 const STATE = {
-  connected: "bg-pastel-green",
-  configured_unverified: "bg-pastel-yellow",
-  disconnected: "bg-pastel-pink",
-  demo: "bg-pastel-lilac",
+  working: { cls: "bg-pastel-green", label: "working" },
+  failing: { cls: "bg-pastel-pink", label: "failing" },
+  needs_setup: { cls: "bg-pastel-yellow", label: "needs setup" },
+  demo: { cls: "bg-pastel-lilac", label: "demo" },
 } as const;
 
 function Section({ id, title, children }: { id: string; title: string; children: React.ReactNode }) {
@@ -46,6 +47,7 @@ export default async function SettingsPage() {
   const audit = await repo.listAudit(25);
   const fixtures = await repo.listFixtures();
   const providers = [replayProvider(), liveProvider()].filter(Boolean);
+  const checks = await runIntegrationChecks();
   const usage = {
     search: await usedToday("google_search", repo),
     explain: await usedToday("gemini_explanation", repo),
@@ -58,14 +60,16 @@ export default async function SettingsPage() {
         <h1 className="font-display text-4xl">Settings &amp; admin</h1>
 
         <Section id="integrations" title="Integrations">
+          <p className="mb-3 text-sm text-muted">Live checks (cached 5 minutes): each one is a free lookup — no generation, no messages sent.</p>
           <ul className="grid gap-3 md:grid-cols-2">
-            {integrationStatuses().map((s) => (
+            {checks.map((s) => (
               <li key={s.name} className="rounded-2xl border border-line bg-white p-4">
                 <p className="flex items-center justify-between gap-2 font-semibold">
-                  {s.name} <span className={`chip ${STATE[s.state]}`}>{s.state.replace(/_/g, " ")}</span>
+                  {s.name} <span className={`chip ${STATE[s.state].cls}`}>{STATE[s.state].label}</span>
                 </p>
                 <p className="mt-1 text-sm text-muted">{s.detail}</p>
-                <p className="mt-1 text-[11px] text-muted">Env: {s.envVars.join(", ")}</p>
+                {s.action && <p className="mt-1 text-sm"><strong>Next:</strong> {s.action}</p>}
+                {s.envVars.length > 0 && <p className="mt-1 text-[11px] text-muted">Env: {s.envVars.join(", ")}</p>}
               </li>
             ))}
           </ul>

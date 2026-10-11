@@ -2,6 +2,7 @@ import fs from "node:fs";
 import path from "node:path";
 import { env, isSupabaseConfigured } from "../env";
 import { LocalRepository } from "./local";
+import { clockMode } from "../pipeline/clock";
 import { SupabaseRepository } from "./supabase";
 import type { Repository } from "./types";
 
@@ -30,6 +31,8 @@ export function getRepository(accessToken: string | null = null): Repository {
  */
 function seedDemoStore(file: string) {
   if (fs.existsSync(file)) return;
+  // The bundled seed is simulated-clock demo data; a real-clock deployment starts empty instead.
+  if (clockMode() === "real") return;
   const seed = path.join(process.cwd(), "data", "demo", "seed-store.json");
   if (!process.env.VERCEL || !fs.existsSync(seed)) return;
   fs.mkdirSync(path.dirname(file), { recursive: true });
