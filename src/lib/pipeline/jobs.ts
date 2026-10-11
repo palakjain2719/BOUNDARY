@@ -11,7 +11,7 @@
 import crypto from "node:crypto";
 import { findMatch, loadCompetition } from "../data/historical";
 import type { Competition } from "../data/types";
-import { availableActuals, evaluateSystem } from "../evaluation/evaluate";
+import { archiveMatchId, availableActuals, evaluateSystem } from "../evaluation/evaluate";
 import { backtestProposal, backtestRows, decideProposal, proposeChanges, refreshLivePatterns, refreshPatterns, type Window } from "../learning/loop";
 import { recomputeRecommended, submitProfile } from "../learning/weights";
 import { buildRecommendation } from "../match/actions";
@@ -221,8 +221,8 @@ const collectActuals: JobFn = async ({ repo }) => {
     if (!analysis) continue;
     const snap = await repo.getSnapshot(analysis.snapshotId);
     if (!snap) continue;
-    if (!findMatch(f.id)) {
-      collected.push({ matchId: f.id, status: "unavailable", reason: "No authorised source with player-level results for this match (provider scorecard mapping not configured). Import actuals via CSV." });
+    if (!findMatch(archiveMatchId(f.id))) {
+      collected.push({ matchId: f.id, status: "waiting", reason: "Ball-by-ball data for this match is not in the Cricsheet archive yet (rebuild data after Cricsheet publishes it), or import actuals via CSV." });
       continue;
     }
     // Prefer platform labels when they exist (Kaggle men's IPL 2008–2023); otherwise reconstruct.

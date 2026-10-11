@@ -56,9 +56,11 @@ export function integrationStatuses(): IntegrationStatus[] {
     },
     {
       name: "Cricket data provider",
-      state: (env.cricketProvider === "cricapi" && env.cricApiKey) || (env.cricketProvider === "google-search" && isGeminiConfigured()) ? "configured_unverified" : "disconnected",
+      state: env.cricketProvider === "free" || (env.cricketProvider === "cricapi" && env.cricApiKey) || (env.cricketProvider === "google-search" && isGeminiConfigured()) ? "configured_unverified" : "disconnected",
       detail:
-        env.cricketProvider === "cricapi" && env.cricApiKey
+        env.cricketProvider === "free"
+          ? "Live fixtures from Wikipedia season pages (schedule) and the ESPNcricinfo live-scores RSS (in play). Free, no keys."
+          : env.cricketProvider === "cricapi" && env.cricApiKey
           ? "CricAPI adapter enabled. Coverage depends on your plan; verify on Settings."
           : env.cricketProvider === "google-search" && isGeminiConfigured()
             ? "Live fixtures detected with Google Search via Gemini grounding (source-cited, unverified). Uses the Gemini key."

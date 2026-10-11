@@ -27,7 +27,9 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
         <footer className="mx-auto mt-16 max-w-7xl px-4 pb-10 text-xs text-muted sm:px-6">
           <div className="flex flex-wrap items-center justify-between gap-3 border-t border-line pt-6">
             <p>
-              Ball-by-ball data: <a className="underline" href="https://cricsheet.org" target="_blank" rel="noreferrer">Cricsheet</a>. Historical men&apos;s IPL fantasy labels: Kaggle Dream11 dataset (2008–2023). Weather:{" "}
+              Ball-by-ball data: <a className="underline" href="https://cricsheet.org" target="_blank" rel="noreferrer">Cricsheet</a>. Historical men&apos;s IPL fantasy labels: Kaggle Dream11 dataset (2008–2023). Live fixtures (when enabled):{" "}
+              <a className="underline" href="https://en.wikipedia.org" target="_blank" rel="noreferrer">Wikipedia</a> (CC BY-SA) and the{" "}
+              <a className="underline" href="https://www.espncricinfo.com" target="_blank" rel="noreferrer">ESPNcricinfo</a> live-scores feed. Weather:{" "}
               <a className="underline" href="https://open-meteo.com" target="_blank" rel="noreferrer">Open-Meteo</a>. Not affiliated with Dream11; no data is scraped from the Dream11 app.
             </p>
             <Link href="/how-it-works" className="underline">How it works</Link>

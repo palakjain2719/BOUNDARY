@@ -147,18 +147,24 @@ export function evaluateMatch(args: {
  * Actual points available from data for a replay match: reconstructed (calculator over Cricsheet events,
  * same rules as the snapshot) or Kaggle Dream11 labels (men's IPL 2008–2023, high-confidence mapping only).
  */
+/** Cricsheet id for a match: provider fixtures detected from Wikipedia/Cricinfo carry it as "ci-<id>". */
+export function archiveMatchId(matchId: string) {
+  return matchId.startsWith("ci-") ? matchId.slice(3) : matchId;
+}
+
 export function availableActuals(snapshot: Snapshot, kind: "reconstructed" | "kaggle_label"): { playerId: string; basePoints: number; lineItems?: unknown }[] {
-  const hist = findMatch(snapshot.matchId);
+  const archiveId = archiveMatchId(snapshot.matchId);
+  const hist = findMatch(archiveId);
   if (!hist) return [];
   if (kind === "kaggle_label") {
     if (snapshot.competition !== "IPL") return [];
     return loadKaggleLabels()
-      .filter((l) => l.matchId === snapshot.matchId && l.playerId)
+      .filter((l) => l.matchId === archiveId && l.playerId)
       .map((l) => ({ playerId: l.playerId!, basePoints: l.totalFP }));
   }
   const rules = getRules(snapshot.rulesId);
   const data = loadCompetition(snapshot.competition);
-  return (data.statsByMatch.get(snapshot.matchId) ?? []).map((s) => {
+  return (data.statsByMatch.get(archiveId) ?? []).map((s) => {
     const prior = (data.statsByPlayer.get(s.playerId) ?? []).filter((x) => (data.matchById.get(x.matchId)?.date ?? "") < hist.match.date);
     const role = snapshot.pool.find((p) => p.playerId === s.playerId)?.role ?? inferRole(prior).role;
     const sc = scorePlayer(s, role, rules);

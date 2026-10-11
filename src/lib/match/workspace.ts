@@ -223,12 +223,24 @@ export async function buildWorkspace(
       if (squad?.some((p) => !p.role)) warnings.push("Some provider squad roles were missing and default to BAT.");
     }
     const names = nameIndex(data);
+    const proxyIds = new Set<string>();
+    if (!imported.length && fixture.source === "provider") {
+      // No squad from the provider: labelled squad proxy from each franchise's recent Cricsheet appearances.
+      for (const team of [match.team1, match.team2]) {
+        for (const pid of squadProxy(data, team, match.date)) {
+          imported.push({ fixtureId: fixture.id, playerName: playerName(data, pid), playerId: pid, team, role: "BAT", credits: null, announced: null });
+          proxyIds.add(pid);
+        }
+      }
+      if (imported.length) warnings.push("Provider has no squads: pool is a squad proxy from each team's last 5 matches in the Cricsheet archive.");
+    }
     pool = imported.map((p) => ({
       playerId: p.playerId ?? names.get(p.playerName.toLowerCase()) ?? `import:${p.playerName}`,
-      name: p.playerName, team: p.team, role: p.role, roleSource: "imported", credits: p.credits,
-      creditSource: p.credits == null ? "none" : "imported", announced: p.announced,
+      name: p.playerName, team: p.team, role: p.role,
+      roleSource: p.playerId && proxyIds.has(p.playerId) ? "inferred_history" : fixture.source === "provider" ? "provider" : "imported", credits: p.credits,
+      creditSource: p.credits != null ? "imported" : p.playerId && proxyIds.has(p.playerId) ? "estimated_demo" : "none", announced: p.announced,
     }));
-    lineupStatus = "imported_pool";
+    lineupStatus = proxyIds.size ? "squad_proxy" : "imported_pool";
     if (imported.some((p) => p.announced)) phase = "post_toss";
     if (!pool.length) warnings.push("No player pool imported for this fixture yet. Import a pool CSV on Settings → Data import.");
   } else if (phase === "post_toss") {
@@ -288,7 +300,11 @@ export async function buildWorkspace(
         ? `Historical replay. Features use ${match.competition} matches before ${match.date}.`
         : `Imported ${fixture?.importedAt?.slice(0, 16).replace("T", " ") ?? ""} UTC. History through the latest processed ${match.competition} match before ${match.date}.`,
     sourceNotes: [
-      match.origin === "cricsheet_replay" || match.origin === "sim_replay" ? "Fixture, XI and toss from Cricsheet (ball-by-ball archive)." : match.origin === "provider" ? "Fixture and squad from the configured provider." : "Fixture and pool from CSV import.",
+      match.origin === "cricsheet_replay" || match.origin === "sim_replay" ? "Fixture, XI and toss from Cricsheet (ball-by-ball archive)." : match.origin === "provider"
+          ? process.env.CRICKET_PROVIDER === "free"
+            ? "Fixture from Wikipedia (CC BY-SA, via the MediaWiki API); in-play status from the ESPNcricinfo live-scores RSS. Start time converted from Indian local time."
+            : "Fixture and squad from the configured provider."
+          : "Fixture and pool from CSV import.",
       ...(loaded.startTimeAssumed ? ["Start time is assumed (19:30 IST, 15:30 IST for the first game of a double-header); the source has dates only."] : []),
       "No pitch report source configured.",
     ],
