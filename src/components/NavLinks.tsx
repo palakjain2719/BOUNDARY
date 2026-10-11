@@ -6,6 +6,7 @@ const LINKS = [
   { href: "/matches", label: "Matches" },
   { href: "/history", label: "My Teams" },
   { href: "/learning", label: "Performance" },
+  { href: "/play", label: "Play Cricket" },
   { href: "/settings", label: "Settings" },
 ];
 
