@@ -19,6 +19,18 @@ const SYSTEM = [
   "Do not claim the team is valid or invalid beyond the validation label provided. Keep it under 220 words, plain prose, no markdown headings.",
 ].join(" ");
 
+/** Flatten markdown the model may still emit (bullets, bold, headings) into plain prose for the panel. */
+export function toPlainProse(md: string): string {
+  return md
+    .replace(/^\s{0,3}#{1,6}\s+/gm, "")
+    .replace(/^\s*[-*•]\s+/gm, "")
+    .replace(/\*\*([^*]+)\*\*/g, "$1")
+    .replace(/\*([^*\n]+)\*/g, "$1")
+    .replace(/\n{2,}/g, "\n")
+    .replace(/\s*\n\s*/g, " ")
+    .trim();
+}
+
 export async function explainWithGemini(evidence: unknown, fallback: string, fetchImpl: typeof fetch = fetch): Promise<ExplanationResult> {
   if (!isGeminiConfigured()) return { text: fallback, source: "template" };
   const url = `https://generativelanguage.googleapis.com/v1beta/models/${encodeURIComponent(env.geminiModel)}:generateContent`;
@@ -31,14 +43,18 @@ export async function explainWithGemini(evidence: unknown, fallback: string, fet
       body: JSON.stringify({
         systemInstruction: { parts: [{ text: SYSTEM }] },
         contents: [{ role: "user", parts: [{ text: `Evidence JSON:\n${JSON.stringify(evidence)}` }] }],
-        generationConfig: { maxOutputTokens: 600 },
+        // Gemini 3.x spends output tokens on internal thinking; keep it low and leave room for the answer.
+        generationConfig: { maxOutputTokens: 2048, thinkingConfig: { thinkingLevel: "low" } },
       }),
       signal: controller.signal,
     });
     if (!res.ok) return { text: fallback, source: "template", error: `Gemini HTTP ${res.status}` };
-    const json = (await res.json()) as { candidates?: { content?: { parts?: { text?: string }[] } }[] };
-    const text = json.candidates?.[0]?.content?.parts?.map((p) => p.text ?? "").join("").trim();
+    const json = (await res.json()) as { candidates?: { finishReason?: string; content?: { parts?: { text?: string; thought?: boolean }[] } }[] };
+    const cand = json.candidates?.[0];
+    const text = toPlainProse(cand?.content?.parts?.filter((p) => !p.thought).map((p) => p.text ?? "").join("") ?? "");
     if (!text) return { text: fallback, source: "template", error: "Empty Gemini response" };
+    // A truncated explanation is worse than the deterministic one.
+    if (cand?.finishReason && cand.finishReason !== "STOP") return { text: fallback, source: "template", error: `Gemini stopped early (${cand.finishReason})` };
     return { text, source: "gemini" };
   } catch (e) {
     return { text: fallback, source: "template", error: e instanceof Error ? e.message : String(e) };
