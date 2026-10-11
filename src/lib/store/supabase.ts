@@ -10,6 +10,7 @@ import type {
   JobName, JobRun, NotificationPreference, OptimizerRecommendation, PreparedAnalysis, Repository, WeightProfile, ScheduledNotification, Snapshot, TeamEvaluation, UserTeam,
 } from "./types";
 import { SYSTEM_USER_ID } from "./types";
+import { referenceDataComplete, seedReferenceData } from "./seed";
 import type { Competition } from "../data/types";
 
 function must<T>(res: { data: T | null; error: { message: string } | null }, what: string): T {
@@ -32,6 +33,12 @@ export class SupabaseRepository implements Repository {
       db: { schema: env.supabaseSchema },
       global: { headers: accessToken ? { Authorization: `Bearer ${accessToken}` } : {} },
     });
+  }
+
+  /** Seed reference tables if this build's rules/model versions are missing. Returns what was done. */
+  async ensureReferenceData(): Promise<Record<string, unknown>> {
+    if (await referenceDataComplete(this.service)) return { seeded: false };
+    return { seeded: true, ...(await seedReferenceData(this.service)) };
   }
 
   /** Background-job rows are stored with user_id null and written with the service role. */

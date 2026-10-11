@@ -375,6 +375,12 @@ export async function runTick(repo: Repository, opts: { advanceHours?: number; o
   if (lock && lock.until > Date.now()) return { tickId, clock: "", simulated: false, runs: [], locked: true };
   await repo.setState(LOCK_KEY, { until: Date.now() + LOCK_TTL_MS, tickId });
   try {
+    // Supabase: make sure reference rows (rules configs, model versions…) exist before jobs reference them.
+    const maybeSeed = repo as Repository & { ensureReferenceData?: () => Promise<Record<string, unknown>> };
+    if (maybeSeed.ensureReferenceData) {
+      const seeded = await maybeSeed.ensureReferenceData();
+      if (seeded.seeded) await repo.audit({ actor: "pipeline", action: "reference_data.seeded", entity: "system", entityId: "reference_data", details: seeded });
+    }
     let clock = await getClock(repo);
     if (opts.advanceHours && clock.simulated) clock = await advanceSimClock(repo, { hours: opts.advanceHours });
     const ctx: JobContext = { repo, clock, tickId };
