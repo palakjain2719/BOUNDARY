@@ -1,0 +1,45 @@
+{
+  "name": "boundary-match-optimizer",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "eslint",
+    "test": "vitest run",
+    "typecheck": "tsc --noEmit",
+    "data:ingest": "tsx scripts/ingest-cricsheet.ts",
+    "data:reconcile": "tsx scripts/reconcile-kaggle.ts",
+    "data:features": "tsx scripts/export-features.ts",
+    "ml:benchmark": ".venv/bin/python -I ml/train_benchmark.py",
+    "ml:test": ".venv/bin/python -I -m unittest discover -s ml -p 'test_*.py'",
+    "data:build": "npm run data:ingest && npm run data:reconcile && npm run data:features && npm run ml:benchmark",
+    "pipeline:tick": "tsx scripts/pipeline-tick.ts",
+    "pipeline:daemon": "tsx scripts/pipeline-daemon.ts",
+    "db:seed": "tsx scripts/seed-supabase.ts"
+  },
+  "dependencies": {
+    "@supabase/supabase-js": "^2.117.3",
+    "next": "15.5.27",
+    "papaparse": "^5.7.0",
+    "react": "19.1.0",
+    "react-dom": "19.1.0",
+    "zod": "^3.25.76"
+  },
+  "devDependencies": {
+    "@electric-sql/pglite": "^0.3.16",
+    "@eslint/eslintrc": "^3",
+    "@tailwindcss/postcss": "^4",
+    "@types/node": "^20",
+    "@types/papaparse": "^5.5.2",
+    "@types/react": "^19",
+    "@types/react-dom": "^19",
+    "eslint": "^9",
+    "eslint-config-next": "15.5.27",
+    "tailwindcss": "^4",
+    "tsx": "^4.23.15",
+    "typescript": "^5",
+    "vitest": "^3.2.7"
+  }
+}

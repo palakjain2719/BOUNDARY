@@ -1,0 +1,42 @@
+{
+  "generatedAt": "2026-10-11T15:29:39.639Z",
+  "generator": "scripts/ingest-cricsheet.ts",
+  "competitions": {
+    "IPL": {
+      "gender": "male",
+      "matches": 1243,
+      "playerMatchRows": 27909,
+      "players": 809,
+      "dateRange": {
+        "from": "2008-04-18",
+        "to": "2026-05-31"
+      },
+      "superOverMatches": 16,
+      "source": "Cricsheet ipl_male_json (CC BY 4.0-style ODC-By; see Cricsheet LICENSE)"
+    },
+    "WPL": {
+      "gender": "female",
+      "matches": 88,
+      "playerMatchRows": 1937,
+      "players": 136,
+      "dateRange": {
+        "from": "2023-03-04",
+        "to": "2026-02-05"
+      },
+      "superOverMatches": 1,
+      "source": "Cricsheet wpl_json"
+    }
+  },
+  "kaggleIplLabels": {
+    "rows": 22362,
+    "placeholderRows": 154,
+    "high": 20917,
+    "notHigh": 1291,
+    "labelledMatches": 1024,
+    "seasons": {
+      "from": "2008",
+      "to": "2023"
+    },
+    "source": "Kaggle Dream11 IPL fantasy dataset (Final_Fantasy_data.csv); identity mapping from supplied training package, high confidence only"
+  }
+}

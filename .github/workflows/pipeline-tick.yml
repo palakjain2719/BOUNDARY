@@ -1,0 +1,17 @@
+# Calls the deployed pipeline every 15 minutes (works on any Vercel plan).
+# Set repository secrets: APP_URL (e.g. https://your-app.vercel.app) and CRON_SECRET.
+name: pipeline-tick
+on:
+  schedule:
+    - cron: "*/15 * * * *"
+  workflow_dispatch: {}
+jobs:
+  tick:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Run one pipeline tick
+        run: |
+          code=$(curl -s -o response.json -w "%{http_code}" -H "Authorization: Bearer ${{ secrets.CRON_SECRET }}" "${{ secrets.APP_URL }}/api/cron/pipeline")
+          cat response.json
+          test "$code" = "200"

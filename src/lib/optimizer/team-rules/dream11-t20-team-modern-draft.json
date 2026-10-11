@@ -1,0 +1,17 @@
+{
+  "id": "dream11-t20-team-modern-draft",
+  "version": "0.1.0",
+  "name": "Dream11 T20 team composition (modern) – DRAFT",
+  "status": "draft",
+  "officialSourceUrl": "https://www.dream11.com/fantasy-cricket/point-system",
+  "verifiedAt": null,
+  "provenance": "Recollection of the post-2022 Dream11 composition (11 players, 100 credits, max 10 per real team, 1–8 per role). The official page returned HTTP 502 on 2026-10-11; verify before relying on it.",
+  "squadSize": 11,
+  "creditCap": 100,
+  "maxPerRealTeam": 10,
+  "minPerRealTeam": 1,
+  "roleLimits": { "WK": [1, 8], "BAT": [1, 8], "AR": [1, 8], "BOWL": [1, 8] },
+  "requireCaptain": true,
+  "requireViceCaptain": true,
+  "hasOfficialBench": false
+}

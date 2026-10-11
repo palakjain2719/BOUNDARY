@@ -1,0 +1,17 @@
+{
+  "id": "dream11-t20-team-legacy",
+  "version": "1.0.0",
+  "name": "Dream11 T20 team composition (legacy, ≤2021)",
+  "status": "draft",
+  "officialSourceUrl": "https://www.dream11.com/fantasy-cricket/point-system",
+  "verifiedAt": null,
+  "provenance": "Widely documented legacy Dream11 T20 composition (11 players, 100 credits, max 7 per real team, WK 1–4, BAT 3–6, AR 1–4, BOWL 3–6). Not verified against an official archive.",
+  "squadSize": 11,
+  "creditCap": 100,
+  "maxPerRealTeam": 7,
+  "minPerRealTeam": 1,
+  "roleLimits": { "WK": [1, 4], "BAT": [3, 6], "AR": [1, 4], "BOWL": [3, 6] },
+  "requireCaptain": true,
+  "requireViceCaptain": true,
+  "hasOfficialBench": false
+}

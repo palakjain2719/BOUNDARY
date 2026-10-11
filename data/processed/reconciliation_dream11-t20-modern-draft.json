@@ -1,0 +1,1606 @@
+{
+  "generatedAt": "2026-10-11T15:37:18.412Z",
+  "rulesId": "dream11-t20-modern-draft",
+  "rulesVersion": "0.1.0",
+  "rulesStatus": "draft",
+  "comparedRows": 20917,
+  "labelRowsWithoutCricsheetStats": 0,
+  "note": "Only high-confidence identity-mapped Kaggle rows are compared. Roles are inferred from prior history, which affects duck/strike-rate exemptions. Kaggle labels remain the source of truth for 2008–2023 men's IPL; reconstruction is not substituted for them.",
+  "overall": {
+    "rows": 20917,
+    "exactTotalPct": 12.65,
+    "exactBattingPct": 51.03,
+    "exactBowlingPct": 47.25,
+    "exactFieldingPct": 97.02,
+    "mae": 12.619,
+    "bias": 12.57
+  },
+  "bySeason": {
+    "2008": {
+      "rows": 1181,
+      "exactTotalPct": 14.23,
+      "exactBattingPct": 49.96,
+      "exactBowlingPct": 46.66,
+      "exactFieldingPct": 97.63,
+      "mae": 13.086,
+      "bias": 13.065
+    },
+    "2009": {
+      "rows": 1176,
+      "exactTotalPct": 15.22,
+      "exactBattingPct": 52.89,
+      "exactBowlingPct": 43.88,
+      "exactFieldingPct": 98.38,
+      "mae": 12.023,
+      "bias": 12.016
+    },
+    "2010": {
+      "rows": 1235,
+      "exactTotalPct": 12.23,
+      "exactBattingPct": 49.96,
+      "exactBowlingPct": 45.91,
+      "exactFieldingPct": 97.81,
+      "mae": 12.841,
+      "bias": 12.781
+    },
+    "2011": {
+      "rows": 1501,
+      "exactTotalPct": 13.59,
+      "exactBattingPct": 52.17,
+      "exactBowlingPct": 45.3,
+      "exactFieldingPct": 98,
+      "mae": 12.29,
+      "bias": 12.276
+    },
+    "2012": {
+      "rows": 1528,
+      "exactTotalPct": 12.24,
+      "exactBattingPct": 50.52,
+      "exactBowlingPct": 46.4,
+      "exactFieldingPct": 97.77,
+      "mae": 12.427,
+      "bias": 12.402
+    },
+    "2013": {
+      "rows": 1551,
+      "exactTotalPct": 13.67,
+      "exactBattingPct": 50.93,
+      "exactBowlingPct": 47.39,
+      "exactFieldingPct": 97.55,
+      "mae": 12.509,
+      "bias": 12.499
+    },
+    "2014": {
+      "rows": 1202,
+      "exactTotalPct": 10.9,
+      "exactBattingPct": 50.42,
+      "exactBowlingPct": 47.42,
+      "exactFieldingPct": 98.75,
+      "mae": 12.635,
+      "bias": 12.631
+    },
+    "2015": {
+      "rows": 1160,
+      "exactTotalPct": 11.98,
+      "exactBattingPct": 48.53,
+      "exactBowlingPct": 48.1,
+      "exactFieldingPct": 98.36,
+      "mae": 12.743,
+      "bias": 12.738
+    },
+    "2016": {
+      "rows": 1189,
+      "exactTotalPct": 13.12,
+      "exactBattingPct": 52.06,
+      "exactBowlingPct": 46.85,
+      "exactFieldingPct": 98.23,
+      "mae": 12.223,
+      "bias": 12.208
+    },
+    "2017": {
+      "rows": 1168,
+      "exactTotalPct": 12.67,
+      "exactBattingPct": 51.63,
+      "exactBowlingPct": 48.03,
+      "exactFieldingPct": 97.6,
+      "mae": 12.578,
+      "bias": 12.574
+    },
+    "2018": {
+      "rows": 1252,
+      "exactTotalPct": 10.3,
+      "exactBattingPct": 50.08,
+      "exactBowlingPct": 46.81,
+      "exactFieldingPct": 91.85,
+      "mae": 12.777,
+      "bias": 12.528
+    },
+    "2019": {
+      "rows": 1198,
+      "exactTotalPct": 12.69,
+      "exactBattingPct": 51.42,
+      "exactBowlingPct": 50.17,
+      "exactFieldingPct": 93.91,
+      "mae": 12.713,
+      "bias": 12.558
+    },
+    "2020": {
+      "rows": 1226,
+      "exactTotalPct": 11.09,
+      "exactBattingPct": 51.22,
+      "exactBowlingPct": 48.53,
+      "exactFieldingPct": 94.05,
+      "mae": 12.334,
+      "bias": 12.171
+    },
+    "2021": {
+      "rows": 1232,
+      "exactTotalPct": 12.26,
+      "exactBattingPct": 50.49,
+      "exactBowlingPct": 48.05,
+      "exactFieldingPct": 95.45,
+      "mae": 12.39,
+      "bias": 12.311
+    },
+    "2022": {
+      "rows": 1533,
+      "exactTotalPct": 11.81,
+      "exactBattingPct": 50.29,
+      "exactBowlingPct": 47.36,
+      "exactFieldingPct": 98.43,
+      "mae": 13.514,
+      "bias": 13.509
+    },
+    "2023": {
+      "rows": 1585,
+      "exactTotalPct": 14.01,
+      "exactBattingPct": 53.25,
+      "exactBowlingPct": 49.21,
+      "exactFieldingPct": 97.73,
+      "mae": 12.709,
+      "bias": 12.693
+    }
+  },
+  "mismatchSamples": [
+    {
+      "matchId": "1370353",
+      "season": "2023",
+      "player": "Sai Sudharsan",
+      "role": "BAT",
+      "kaggle": {
+        "bat": 130,
+        "bowl": 0,
+        "field": 0,
+        "total": 134
+      },
+      "reconstructed": {
+        "bat": 182,
+        "bowl": 0,
+        "field": 0,
+        "total": 186
+      },
+      "stats": {
+        "runs": 96,
+        "balls": 47,
+        "fours": 8,
+        "sixes": 6,
+        "dismissed": "lbw",
+        "wk": 0,
+        "lbwb": 0,
+        "bb": 0,
+        "rc": 0,
+        "maid": 0,
+        "c": 0,
+        "st": 0,
+        "rod": 0,
+        "roi": 0,
+        "sub": null,
+        "xi": true
+      }
+    },
+    {
+      "matchId": "1370353",
+      "season": "2023",
+      "player": "Mohit Sharma",
+      "role": "BOWL",
+      "kaggle": {
+        "bat": 0,
+        "bowl": 83,
+        "field": 8,
+        "total": 95
+      },
+      "reconstructed": {
+        "bat": 0,
+        "bowl": 94,
+        "field": 16,
+        "total": 114
+      },
+      "stats": {
+        "runs": 0,
+        "balls": 0,
+        "fours": 0,
+        "sixes": 0,
+        "dismissed": null,
+        "wk": 3,
+        "lbwb": 0,
+        "bb": 18,
+        "rc": 36,
+        "maid": 0,
+        "c": 2,
+        "st": 0,
+        "rod": 0,
+        "roi": 0,
+        "sub": null,
+        "xi": true
+      }
+    },
+    {
+      "matchId": "1370353",
+      "season": "2023",
+      "player": "Wriddhiman Saha",
+      "role": "WK",
+      "kaggle": {
+        "bat": 71,
+        "bowl": 0,
+        "field": 0,
+        "total": 75
+      },
+      "reconstructed": {
+        "bat": 90,
+        "bowl": 0,
+        "field": 0,
+        "total": 94
+      },
+      "stats": {
+        "runs": 54,
+        "balls": 39,
+        "fours": 5,
+        "sixes": 1,
+        "dismissed": "caught",
+        "wk": 0,
+        "lbwb": 0,
+        "bb": 0,
+        "rc": 0,
+        "maid": 0,
+        "c": 0,
+        "st": 0,
+        "rod": 0,
+        "roi": 0,
+        "sub": null,
+        "xi": true
+      }
+    },
+    {
+      "matchId": "1370353",
+      "season": "2023",
+      "player": "Shubman Gill",
+      "role": "BAT",
+      "kaggle": {
+        "bat": 56,
+        "bowl": 0,
+        "field": 0,
+        "total": 60
+      },
+      "reconstructed": {
+        "bat": 77,
+        "bowl": 0,
+        "field": 0,
+        "total": 81
+      },
+      "stats": {
+        "runs": 39,
+        "balls": 20,
+        "fours": 7,
+        "sixes": 0,
+        "dismissed": "stumped",
+        "wk": 0,
+        "lbwb": 0,
+        "bb": 0,
+        "rc": 0,
+        "maid": 0,
+        "c": 0,
+        "st": 0,
+        "rod": 0,
+        "roi": 0,
+        "sub": null,
+        "xi": true
+      }
+    },
+    {
+      "matchId": "1370353",
+      "season": "2023",
+      "player": "Noor Ahmad",
+      "role": "BOWL",
+      "kaggle": {
+        "bat": 0,
+        "bowl": 54,
+        "field": 0,
+        "total": 58
+      },
+      "reconstructed": {
+        "bat": 0,
+        "bowl": 70,
+        "field": 0,
+        "total": 74
+      },
+      "stats": {
+        "runs": 0,
+        "balls": 0,
+        "fours": 0,
+        "sixes": 0,
+        "dismissed": null,
+        "wk": 2,
+        "lbwb": 0,
+        "bb": 18,
+        "rc": 17,
+        "maid": 0,
+        "c": 0,
+        "st": 0,
+        "rod": 0,
+        "roi": 0,
+        "sub": null,
+        "xi": true
+      }
+    },
+    {
+      "matchId": "1370353",
+      "season": "2023",
+      "player": "Hardik Pandya",
+      "role": "AR",
+      "kaggle": {
+        "bat": 31,
+        "bowl": 0,
+        "field": 0,
+        "total": 35
+      },
+      "reconstructed": {
+        "bat": 39,
+        "bowl": 1,
+        "field": 0,
+        "total": 44
+      },
+      "stats": {
+        "runs": 21,
+        "balls": 12,
+        "fours": 0,
+        "sixes": 2,
+        "dismissed": null,
+        "wk": 0,
+        "lbwb": 0,
+        "bb": 6,
+        "rc": 14,
+        "maid": 0,
+        "c": 0,
+        "st": 0,
+        "rod": 0,
+        "roi": 0,
+        "sub": null,
+        "xi": true
+      }
+    },
+    {
+      "matchId": "1370353",
+      "season": "2023",
+      "player": "Mohammed Shami",
+      "role": "BOWL",
+      "kaggle": {
+        "bat": 0,
+        "bowl": 0,
+        "field": 0,
+        "total": 4
+      },
+      "reconstructed": {
+        "bat": 0,
+        "bowl": 5,
+        "field": 0,
+        "total": 9
+      },
+      "stats": {
+        "runs": 0,
+        "balls": 0,
+        "fours": 0,
+        "sixes": 0,
+        "dismissed": null,
+        "wk": 0,
+        "lbwb": 0,
+        "bb": 18,
+        "rc": 29,
+        "maid": 0,
+        "c": 0,
+        "st": 0,
+        "rod": 0,
+        "roi": 0,
+        "sub": null,
+        "xi": true
+      }
+    },
+    {
+      "matchId": "1370353",
+      "season": "2023",
+      "player": "Rashid Khan",
+      "role": "BOWL",
+      "kaggle": {
+        "bat": -2,
+        "bowl": -6,
+        "field": 8,
+        "total": 4
+      },
+      "reconstructed": {
+        "bat": 0,
+        "bowl": -4,
+        "field": 8,
+        "total": 8
+      },
+      "stats": {
+        "runs": 0,
+        "balls": 2,
+        "fours": 0,
+        "sixes": 0,
+        "dismissed": "caught",
+        "wk": 0,
+        "lbwb": 0,
+        "bb": 18,
+        "rc": 44,
+        "maid": 0,
+        "c": 1,
+        "st": 0,
+        "rod": 0,
+        "roi": 0,
+        "sub": null,
+        "xi": true
+      }
+    },
+    {
+      "matchId": "1370353",
+      "season": "2023",
+      "player": "Josh Little",
+      "role": "BOWL",
+      "kaggle": {
+        "bat": 0,
+        "bowl": -6,
+        "field": 0,
+        "total": -2
+      },
+      "reconstructed": {
+        "bat": 0,
+        "bowl": -5,
+        "field": 0,
+        "total": -1
+      },
+      "stats": {
+        "runs": 0,
+        "balls": 0,
+        "fours": 0,
+        "sixes": 0,
+        "dismissed": null,
+        "wk": 0,
+        "lbwb": 0,
+        "bb": 12,
+        "rc": 30,
+        "maid": 0,
+        "c": 0,
+        "st": 0,
+        "rod": 0,
+        "roi": 0,
+        "sub": "impact_player",
+        "xi": false
+      }
+    },
+    {
+      "matchId": "1370353",
+      "season": "2023",
+      "player": "Devon Conway",
+      "role": "BAT",
+      "kaggle": {
+        "bat": 65,
+        "bowl": 0,
+        "field": 0,
+        "total": 69
+      },
+      "reconstructed": {
+        "bat": 85,
+        "bowl": 0,
+        "field": 0,
+        "total": 89
+      },
+      "stats": {
+        "runs": 47,
+        "balls": 25,
+        "fours": 4,
+        "sixes": 2,
+        "dismissed": "caught",
+        "wk": 0,
+        "lbwb": 0,
+        "bb": 0,
+        "rc": 0,
+        "maid": 0,
+        "c": 0,
+        "st": 0,
+        "rod": 0,
+        "roi": 0,
+        "sub": null,
+        "xi": true
+      }
+    },
+    {
+      "matchId": "1370353",
+      "season": "2023",
+      "player": "Matheesha Pathirana",
+      "role": "BOWL",
+      "kaggle": {
+        "bat": 0,
+        "bowl": 56,
+        "field": 0,
+        "total": 60
+      },
+      "reconstructed": {
+        "bat": 0,
+        "bowl": 73,
+        "field": 0,
+        "total": 77
+      },
+      "stats": {
+        "runs": 0,
+        "balls": 0,
+        "fours": 0,
+        "sixes": 0,
+        "dismissed": null,
+        "wk": 2,
+        "lbwb": 1,
+        "bb": 24,
+        "rc": 44,
+        "maid": 0,
+        "c": 0,
+        "st": 0,
+        "rod": 0,
+        "roi": 0,
+        "sub": null,
+        "xi": true
+      }
+    },
+    {
+      "matchId": "1370353",
+      "season": "2023",
+      "player": "Shivam Dube",
+      "role": "BAT",
+      "kaggle": {
+        "bat": 44,
+        "bowl": 0,
+        "field": 0,
+        "total": 48
+      },
+      "reconstructed": {
+        "bat": 52,
+        "bowl": 0,
+        "field": 0,
+        "total": 56
+      },
+      "stats": {
+        "runs": 32,
+        "balls": 21,
+        "fours": 0,
+        "sixes": 2,
+        "dismissed": null,
+        "wk": 0,
+        "lbwb": 0,
+        "bb": 0,
+        "rc": 0,
+        "maid": 0,
+        "c": 0,
+        "st": 0,
+        "rod": 0,
+        "roi": 0,
+        "sub": "impact_player",
+        "xi": false
+      }
+    },
+    {
+      "matchId": "1370353",
+      "season": "2023",
+      "player": "Ravindra Jadeja",
+      "role": "AR",
+      "kaggle": {
+        "bat": 18,
+        "bowl": 25,
+        "field": 0,
+        "total": 47
+      },
+      "reconstructed": {
+        "bat": 25,
+        "bowl": 33,
+        "field": 0,
+        "total": 62
+      },
+      "stats": {
+        "runs": 15,
+        "balls": 6,
+        "fours": 1,
+        "sixes": 1,
+        "dismissed": null,
+        "wk": 1,
+        "lbwb": 0,
+        "bb": 24,
+        "rc": 38,
+        "maid": 0,
+        "c": 0,
+        "st": 0,
+        "rod": 0,
+        "roi": 0,
+        "sub": null,
+        "xi": true
+      }
+    },
+    {
+      "matchId": "1370353",
+      "season": "2023",
+      "player": "Ruturaj Gaikwad",
+      "role": "BAT",
+      "kaggle": {
+        "bat": 35,
+        "bowl": 0,
+        "field": 8,
+        "total": 47
+      },
+      "reconstructed": {
+        "bat": 52,
+        "bowl": 0,
+        "field": 8,
+        "total": 64
+      },
+      "stats": {
+        "runs": 26,
+        "balls": 16,
+        "fours": 3,
+        "sixes": 1,
+        "dismissed": "caught",
+        "wk": 0,
+        "lbwb": 0,
+        "bb": 0,
+        "rc": 0,
+        "maid": 0,
+        "c": 1,
+        "st": 0,
+        "rod": 0,
+        "roi": 0,
+        "sub": null,
+        "xi": true
+      }
+    },
+    {
+      "matchId": "1370353",
+      "season": "2023",
+      "player": "Ajinkya Rahane",
+      "role": "BAT",
+      "kaggle": {
+        "bat": 39,
+        "bowl": 0,
+        "field": 0,
+        "total": 43
+      },
+      "reconstructed": {
+        "bat": 57,
+        "bowl": 0,
+        "field": 0,
+        "total": 61
+      },
+      "stats": {
+        "runs": 27,
+        "balls": 13,
+        "fours": 2,
+        "sixes": 2,
+        "dismissed": "caught",
+        "wk": 0,
+        "lbwb": 0,
+        "bb": 0,
+        "rc": 0,
+        "maid": 0,
+        "c": 0,
+        "st": 0,
+        "rod": 0,
+        "roi": 0,
+        "sub": null,
+        "xi": true
+      }
+    },
+    {
+      "matchId": "1370353",
+      "season": "2023",
+      "player": "Deepak Chahar",
+      "role": "BOWL",
+      "kaggle": {
+        "bat": 0,
+        "bowl": 25,
+        "field": 0,
+        "total": 29
+      },
+      "reconstructed": {
+        "bat": 0,
+        "bowl": 35,
+        "field": 0,
+        "total": 39
+      },
+      "stats": {
+        "runs": 0,
+        "balls": 0,
+        "fours": 0,
+        "sixes": 0,
+        "dismissed": null,
+        "wk": 1,
+        "lbwb": 0,
+        "bb": 24,
+        "rc": 38,
+        "maid": 0,
+        "c": 0,
+        "st": 0,
+        "rod": 0,
+        "roi": 0,
+        "sub": null,
+        "xi": true
+      }
+    },
+    {
+      "matchId": "1370353",
+      "season": "2023",
+      "player": "Ambati Rayudu",
+      "role": "WK",
+      "kaggle": {
+        "bat": 24,
+        "bowl": 0,
+        "field": 0,
+        "total": 28
+      },
+      "reconstructed": {
+        "bat": 35,
+        "bowl": 0,
+        "field": 0,
+        "total": 39
+      },
+      "stats": {
+        "runs": 19,
+        "balls": 8,
+        "fours": 1,
+        "sixes": 2,
+        "dismissed": "caught and bowled",
+        "wk": 0,
+        "lbwb": 0,
+        "bb": 0,
+        "rc": 0,
+        "maid": 0,
+        "c": 0,
+        "st": 0,
+        "rod": 0,
+        "roi": 0,
+        "sub": null,
+        "xi": true
+      }
+    },
+    {
+      "matchId": "1370353",
+      "season": "2023",
+      "player": "Maheesh Theekshana",
+      "role": "BOWL",
+      "kaggle": {
+        "bat": 0,
+        "bowl": 0,
+        "field": 0,
+        "total": 4
+      },
+      "reconstructed": {
+        "bat": 0,
+        "bowl": 8,
+        "field": 0,
+        "total": 12
+      },
+      "stats": {
+        "runs": 0,
+        "balls": 0,
+        "fours": 0,
+        "sixes": 0,
+        "dismissed": null,
+        "wk": 0,
+        "lbwb": 0,
+        "bb": 24,
+        "rc": 36,
+        "maid": 0,
+        "c": 0,
+        "st": 0,
+        "rod": 0,
+        "roi": 0,
+        "sub": null,
+        "xi": true
+      }
+    },
+    {
+      "matchId": "1370353",
+      "season": "2023",
+      "player": "Tushar Deshpande",
+      "role": "BOWL",
+      "kaggle": {
+        "bat": 0,
+        "bowl": -6,
+        "field": 0,
+        "total": -2
+      },
+      "reconstructed": {
+        "bat": 0,
+        "bowl": -2,
+        "field": 0,
+        "total": 2
+      },
+      "stats": {
+        "runs": 0,
+        "balls": 0,
+        "fours": 0,
+        "sixes": 0,
+        "dismissed": null,
+        "wk": 0,
+        "lbwb": 0,
+        "bb": 24,
+        "rc": 56,
+        "maid": 0,
+        "c": 0,
+        "st": 0,
+        "rod": 0,
+        "roi": 0,
+        "sub": null,
+        "xi": true
+      }
+    },
+    {
+      "matchId": "1370352",
+      "season": "2023",
+      "player": "Shubman Gill",
+      "role": "BAT",
+      "kaggle": {
+        "bat": 178,
+        "bowl": 0,
+        "field": 0,
+        "total": 182
+      },
+      "reconstructed": {
+        "bat": 239,
+        "bowl": 0,
+        "field": 0,
+        "total": 243
+      },
+      "stats": {
+        "runs": 129,
+        "balls": 60,
+        "fours": 7,
+        "sixes": 10,
+        "dismissed": "caught",
+        "wk": 0,
+        "lbwb": 0,
+        "bb": 0,
+        "rc": 0,
+        "maid": 0,
+        "c": 0,
+        "st": 0,
+        "rod": 0,
+        "roi": 0,
+        "sub": null,
+        "xi": true
+      }
+    },
+    {
+      "matchId": "1370352",
+      "season": "2023",
+      "player": "Rashid Khan",
+      "role": "BOWL",
+      "kaggle": {
+        "bat": 6,
+        "bowl": 66,
+        "field": 0,
+        "total": 76
+      },
+      "reconstructed": {
+        "bat": 9,
+        "bowl": 84,
+        "field": 0,
+        "total": 97
+      },
+      "stats": {
+        "runs": 5,
+        "balls": 2,
+        "fours": 1,
+        "sixes": 0,
+        "dismissed": null,
+        "wk": 2,
+        "lbwb": 2,
+        "bb": 24,
+        "rc": 33,
+        "maid": 0,
+        "c": 0,
+        "st": 0,
+        "rod": 0,
+        "roi": 0,
+        "sub": null,
+        "xi": true
+      }
+    },
+    {
+      "matchId": "1370352",
+      "season": "2023",
+      "player": "Sai Sudharsan",
+      "role": "BAT",
+      "kaggle": {
+        "bat": 56,
+        "bowl": 0,
+        "field": 8,
+        "total": 68
+      },
+      "reconstructed": {
+        "bat": 75,
+        "bowl": 0,
+        "field": 8,
+        "total": 87
+      },
+      "stats": {
+        "runs": 43,
+        "balls": 31,
+        "fours": 5,
+        "sixes": 1,
+        "dismissed": "retired out",
+        "wk": 0,
+        "lbwb": 0,
+        "bb": 0,
+        "rc": 0,
+        "maid": 0,
+        "c": 1,
+        "st": 0,
+        "rod": 0,
+        "roi": 0,
+        "sub": null,
+        "xi": true
+      }
+    },
+    {
+      "matchId": "1370352",
+      "season": "2023",
+      "player": "Hardik Pandya",
+      "role": "AR",
+      "kaggle": {
+        "bat": 40,
+        "bowl": -4,
+        "field": 8,
+        "total": 48
+      },
+      "reconstructed": {
+        "bat": 58,
+        "bowl": 0,
+        "field": 8,
+        "total": 70
+      },
+      "stats": {
+        "runs": 28,
+        "balls": 13,
+        "fours": 2,
+        "sixes": 2,
+        "dismissed": null,
+        "wk": 0,
+        "lbwb": 0,
+        "bb": 12,
+        "rc": 24,
+        "maid": 0,
+        "c": 1,
+        "st": 0,
+        "rod": 0,
+        "roi": 0,
+        "sub": null,
+        "xi": true
+      }
+    },
+    {
+      "matchId": "1370352",
+      "season": "2023",
+      "player": "Mohammed Shami",
+      "role": "BOWL",
+      "kaggle": {
+        "bat": 0,
+        "bowl": 44,
+        "field": 0,
+        "total": 48
+      },
+      "reconstructed": {
+        "bat": 0,
+        "bowl": 60,
+        "field": 0,
+        "total": 64
+      },
+      "stats": {
+        "runs": 0,
+        "balls": 0,
+        "fours": 0,
+        "sixes": 0,
+        "dismissed": null,
+        "wk": 2,
+        "lbwb": 0,
+        "bb": 18,
+        "rc": 41,
+        "maid": 0,
+        "c": 0,
+        "st": 0,
+        "rod": 0,
+        "roi": 0,
+        "sub": null,
+        "xi": true
+      }
+    },
+    {
+      "matchId": "1370352",
+      "season": "2023",
+      "player": "Josh Little",
+      "role": "BOWL",
+      "kaggle": {
+        "bat": 0,
+        "bowl": 33,
+        "field": 8,
+        "total": 45
+      },
+      "reconstructed": {
+        "bat": 0,
+        "bowl": 44,
+        "field": 8,
+        "total": 56
+      },
+      "stats": {
+        "runs": 0,
+        "balls": 0,
+        "fours": 0,
+        "sixes": 0,
+        "dismissed": null,
+        "wk": 1,
+        "lbwb": 1,
+        "bb": 18,
+        "rc": 26,
+        "maid": 0,
+        "c": 1,
+        "st": 0,
+        "rod": 0,
+        "roi": 0,
+        "sub": "impact_player",
+        "xi": false
+      }
+    },
+    {
+      "matchId": "1370352",
+      "season": "2023",
+      "player": "Wriddhiman Saha",
+      "role": "WK",
+      "kaggle": {
+        "bat": 21,
+        "bowl": 0,
+        "field": 8,
+        "total": 33
+      },
+      "reconstructed": {
+        "bat": 30,
+        "bowl": 0,
+        "field": 8,
+        "total": 42
+      },
+      "stats": {
+        "runs": 18,
+        "balls": 16,
+        "fours": 3,
+        "sixes": 0,
+        "dismissed": "stumped",
+        "wk": 0,
+        "lbwb": 0,
+        "bb": 0,
+        "rc": 0,
+        "maid": 0,
+        "c": 1,
+        "st": 0,
+        "rod": 0,
+        "roi": 0,
+        "sub": null,
+        "xi": true
+      }
+    },
+    {
+      "matchId": "1370352",
+      "season": "2023",
+      "player": "Noor Ahmad",
+      "role": "BOWL",
+      "kaggle": {
+        "bat": 0,
+        "bowl": 0,
+        "field": 0,
+        "total": 4
+      },
+      "reconstructed": {
+        "bat": 0,
+        "bowl": 8,
+        "field": 0,
+        "total": 12
+      },
+      "stats": {
+        "runs": 0,
+        "balls": 0,
+        "fours": 0,
+        "sixes": 0,
+        "dismissed": null,
+        "wk": 0,
+        "lbwb": 0,
+        "bb": 24,
+        "rc": 35,
+        "maid": 0,
+        "c": 0,
+        "st": 0,
+        "rod": 0,
+        "roi": 0,
+        "sub": null,
+        "xi": true
+      }
+    },
+    {
+      "matchId": "1370352",
+      "season": "2023",
+      "player": "Suryakumar Yadav",
+      "role": "BAT",
+      "kaggle": {
+        "bat": 84,
+        "bowl": 0,
+        "field": 0,
+        "total": 88
+      },
+      "reconstructed": {
+        "bat": 113,
+        "bowl": 0,
+        "field": 0,
+        "total": 117
+      },
+      "stats": {
+        "runs": 61,
+        "balls": 38,
+        "fours": 7,
+        "sixes": 2,
+        "dismissed": "bowled",
+        "wk": 0,
+        "lbwb": 0,
+        "bb": 0,
+        "rc": 0,
+        "maid": 0,
+        "c": 0,
+        "st": 0,
+        "rod": 0,
+        "roi": 0,
+        "sub": null,
+        "xi": true
+      }
+    },
+    {
+      "matchId": "1370352",
+      "season": "2023",
+      "player": "Tilak Varma",
+      "role": "BAT",
+      "kaggle": {
+        "bat": 64,
+        "bowl": 0,
+        "field": 0,
+        "total": 68
+      },
+      "reconstructed": {
+        "bat": 91,
+        "bowl": 0,
+        "field": 0,
+        "total": 95
+      },
+      "stats": {
+        "runs": 43,
+        "balls": 14,
+        "fours": 5,
+        "sixes": 3,
+        "dismissed": "bowled",
+        "wk": 0,
+        "lbwb": 0,
+        "bb": 0,
+        "rc": 0,
+        "maid": 0,
+        "c": 0,
+        "st": 0,
+        "rod": 0,
+        "roi": 0,
+        "sub": null,
+        "xi": true
+      }
+    },
+    {
+      "matchId": "1370352",
+      "season": "2023",
+      "player": "Cameron Green",
+      "role": "AR",
+      "kaggle": {
+        "bat": 42,
+        "bowl": -4,
+        "field": 0,
+        "total": 42
+      },
+      "reconstructed": {
+        "bat": 56,
+        "bowl": 0,
+        "field": 0,
+        "total": 60
+      },
+      "stats": {
+        "runs": 30,
+        "balls": 20,
+        "fours": 2,
+        "sixes": 2,
+        "dismissed": "bowled",
+        "wk": 0,
+        "lbwb": 0,
+        "bb": 18,
+        "rc": 35,
+        "maid": 0,
+        "c": 0,
+        "st": 0,
+        "rod": 0,
+        "roi": 0,
+        "sub": null,
+        "xi": true
+      }
+    },
+    {
+      "matchId": "1370352",
+      "season": "2023",
+      "player": "Akash Madhwal",
+      "role": "BOWL",
+      "kaggle": {
+        "bat": 0,
+        "bowl": 19,
+        "field": 0,
+        "total": 23
+      },
+      "reconstructed": {
+        "bat": 0,
+        "bowl": 31,
+        "field": 0,
+        "total": 35
+      },
+      "stats": {
+        "runs": 0,
+        "balls": 0,
+        "fours": 0,
+        "sixes": 0,
+        "dismissed": null,
+        "wk": 1,
+        "lbwb": 0,
+        "bb": 24,
+        "rc": 52,
+        "maid": 0,
+        "c": 0,
+        "st": 0,
+        "rod": 0,
+        "roi": 0,
+        "sub": null,
+        "xi": true
+      }
+    },
+    {
+      "matchId": "1370352",
+      "season": "2023",
+      "player": "Piyush Chawla",
+      "role": "BOWL",
+      "kaggle": {
+        "bat": 0,
+        "bowl": 19,
+        "field": 0,
+        "total": 23
+      },
+      "reconstructed": {
+        "bat": 0,
+        "bowl": 24,
+        "field": 0,
+        "total": 28
+      },
+      "stats": {
+        "runs": 0,
+        "balls": 2,
+        "fours": 0,
+        "sixes": 0,
+        "dismissed": "caught",
+        "wk": 1,
+        "lbwb": 0,
+        "bb": 18,
+        "rc": 45,
+        "maid": 0,
+        "c": 0,
+        "st": 0,
+        "rod": 0,
+        "roi": 0,
+        "sub": null,
+        "xi": true
+      }
+    },
+    {
+      "matchId": "1370352",
+      "season": "2023",
+      "player": "Kumar Kartikeya",
+      "role": "BOWL",
+      "kaggle": {
+        "bat": 7,
+        "bowl": 0,
+        "field": 0,
+        "total": 11
+      },
+      "reconstructed": {
+        "bat": 10,
+        "bowl": 2,
+        "field": 0,
+        "total": 16
+      },
+      "stats": {
+        "runs": 6,
+        "balls": 7,
+        "fours": 1,
+        "sixes": 0,
+        "dismissed": "caught",
+        "wk": 0,
+        "lbwb": 0,
+        "bb": 12,
+        "rc": 15,
+        "maid": 0,
+        "c": 0,
+        "st": 0,
+        "rod": 0,
+        "roi": 0,
+        "sub": null,
+        "xi": true
+      }
+    },
+    {
+      "matchId": "1370352",
+      "season": "2023",
+      "player": "Jason Behrendorff",
+      "role": "BOWL",
+      "kaggle": {
+        "bat": 3,
+        "bowl": 2,
+        "field": 0,
+        "total": 9
+      },
+      "reconstructed": {
+        "bat": 3,
+        "bowl": 10,
+        "field": 0,
+        "total": 17
+      },
+      "stats": {
+        "runs": 3,
+        "balls": 5,
+        "fours": 0,
+        "sixes": 0,
+        "dismissed": null,
+        "wk": 0,
+        "lbwb": 0,
+        "bb": 24,
+        "rc": 28,
+        "maid": 0,
+        "c": 0,
+        "st": 0,
+        "rod": 0,
+        "roi": 0,
+        "sub": null,
+        "xi": true
+      }
+    },
+    {
+      "matchId": "1370352",
+      "season": "2023",
+      "player": "Nehal Wadhera",
+      "role": "BAT",
+      "kaggle": {
+        "bat": 5,
+        "bowl": 0,
+        "field": 0,
+        "total": 9
+      },
+      "reconstructed": {
+        "bat": 8,
+        "bowl": 0,
+        "field": 0,
+        "total": 12
+      },
+      "stats": {
+        "runs": 4,
+        "balls": 3,
+        "fours": 1,
+        "sixes": 0,
+        "dismissed": "caught",
+        "wk": 0,
+        "lbwb": 0,
+        "bb": 0,
+        "rc": 0,
+        "maid": 0,
+        "c": 0,
+        "st": 0,
+        "rod": 0,
+        "roi": 0,
+        "sub": "impact_player",
+        "xi": false
+      }
+    },
+    {
+      "matchId": "1370352",
+      "season": "2023",
+      "player": "Chris Jordan",
+      "role": "BOWL",
+      "kaggle": {
+        "bat": 2,
+        "bowl": -6,
+        "field": 0,
+        "total": 0
+      },
+      "reconstructed": {
+        "bat": 2,
+        "bowl": 0,
+        "field": 0,
+        "total": 6
+      },
+      "stats": {
+        "runs": 2,
+        "balls": 5,
+        "fours": 0,
+        "sixes": 0,
+        "dismissed": "caught",
+        "wk": 0,
+        "lbwb": 0,
+        "bb": 24,
+        "rc": 56,
+        "maid": 0,
+        "c": 0,
+        "st": 0,
+        "rod": 0,
+        "roi": 0,
+        "sub": null,
+        "xi": true
+      }
+    },
+    {
+      "matchId": "1370351",
+      "season": "2023",
+      "player": "Akash Madhwal",
+      "role": "BOWL",
+      "kaggle": {
+        "bat": 0,
+        "bowl": 163,
+        "field": 6,
+        "total": 173
+      },
+      "reconstructed": {
+        "bat": 0,
+        "bowl": 201,
+        "field": 6,
+        "total": 211
+      },
+      "stats": {
+        "runs": 0,
+        "balls": 0,
+        "fours": 0,
+        "sixes": 0,
+        "dismissed": null,
+        "wk": 5,
+        "lbwb": 2,
+        "bb": 21,
+        "rc": 5,
+        "maid": 0,
+        "c": 0,
+        "st": 0,
+        "rod": 0,
+        "roi": 1,
+        "sub": null,
+        "xi": true
+      }
+    },
+    {
+      "matchId": "1370351",
+      "season": "2023",
+      "player": "Cameron Green",
+      "role": "AR",
+      "kaggle": {
+        "bat": 59,
+        "bowl": 4,
+        "field": 14,
+        "total": 81
+      },
+      "reconstructed": {
+        "bat": 81,
+        "bowl": 11,
+        "field": 14,
+        "total": 110
+      },
+      "stats": {
+        "runs": 41,
+        "balls": 23,
+        "fours": 6,
+        "sixes": 1,
+        "dismissed": "bowled",
+        "wk": 0,
+        "lbwb": 0,
+        "bb": 18,
+        "rc": 15,
+        "maid": 0,
+        "c": 1,
+        "st": 0,
+        "rod": 0,
+        "roi": 1,
+        "sub": null,
+        "xi": true
+      }
+    },
+    {
+      "matchId": "1370351",
+      "season": "2023",
+      "player": "Chris Jordan",
+      "role": "BOWL",
+      "kaggle": {
+        "bat": 4,
+        "bowl": 43,
+        "field": 8,
+        "total": 59
+      },
+      "reconstructed": {
+        "bat": 4,
+        "bowl": 57,
+        "field": 8,
+        "total": 73
+      },
+      "stats": {
+        "runs": 4,
+        "balls": 7,
+        "fours": 0,
+        "sixes": 0,
+        "dismissed": "caught",
+        "wk": 1,
+        "lbwb": 0,
+        "bb": 12,
+        "rc": 7,
+        "maid": 1,
+        "c": 1,
+        "st": 0,
+        "rod": 0,
+        "roi": 0,
+        "sub": null,
+        "xi": true
+      }
+    },
+    {
+      "matchId": "1370351",
+      "season": "2023",
+      "player": "Suryakumar Yadav",
+      "role": "BAT",
+      "kaggle": {
+        "bat": 47,
+        "bowl": 0,
+        "field": 0,
+        "total": 51
+      },
+      "reconstructed": {
+        "bat": 61,
+        "bowl": 0,
+        "field": 0,
+        "total": 65
+      },
+      "stats": {
+        "runs": 33,
+        "balls": 20,
+        "fours": 2,
+        "sixes": 2,
+        "dismissed": "caught",
+        "wk": 0,
+        "lbwb": 0,
+        "bb": 0,
+        "rc": 0,
+        "maid": 0,
+        "c": 0,
+        "st": 0,
+        "rod": 0,
+        "roi": 0,
+        "sub": null,
+        "xi": true
+      }
+    }
+  ]
+}
