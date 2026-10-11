@@ -7,6 +7,8 @@ export const env = {
   supabaseUrl: process.env.NEXT_PUBLIC_SUPABASE_URL || "",
   supabaseAnonKey: process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || "",
   supabaseServiceRoleKey: process.env.SUPABASE_SERVICE_ROLE_KEY || "",
+  /** Postgres schema holding BOUNDARY's tables (lets the app share a Supabase project with other apps). */
+  supabaseSchema: process.env.SUPABASE_DB_SCHEMA || "boundary",
   geminiApiKey: process.env.GEMINI_API_KEY || "",
   geminiModel: process.env.GEMINI_MODEL || "",
   cricketProvider: process.env.CRICKET_PROVIDER || "none",

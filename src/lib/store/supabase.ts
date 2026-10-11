@@ -20,13 +20,16 @@ function must<T>(res: { data: T | null; error: { message: string } | null }, wha
 export class SupabaseRepository implements Repository {
   readonly kind = "supabase" as const;
   readonly persistent = true;
-  private service: SupabaseClient;
-  private user: SupabaseClient;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  private service: SupabaseClient<any, any, any>;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  private user: SupabaseClient<any, any, any>;
 
   constructor(private accessToken: string | null) {
-    this.service = createClient(env.supabaseUrl, env.supabaseServiceRoleKey, { auth: { persistSession: false } });
+    this.service = createClient(env.supabaseUrl, env.supabaseServiceRoleKey, { auth: { persistSession: false }, db: { schema: env.supabaseSchema } });
     this.user = createClient(env.supabaseUrl, env.supabaseAnonKey, {
       auth: { persistSession: false },
+      db: { schema: env.supabaseSchema },
       global: { headers: accessToken ? { Authorization: `Bearer ${accessToken}` } : {} },
     });
   }

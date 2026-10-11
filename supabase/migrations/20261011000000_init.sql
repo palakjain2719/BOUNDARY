@@ -1,18 +1,24 @@
 -- Match Optimizer schema: reference data, immutable decision snapshots, user-owned teams, evaluation and
 -- learning loop, notifications and audit. RLS is enabled on every table. Privileged writes use the
 -- service role on the server only.
+--
+-- Everything lives in its own `boundary` schema so the app can share a Supabase project with other apps
+-- (e.g. one that already has a public.matches table) without touching their tables or grants.
+-- After running: Supabase Dashboard → Project Settings → Data API → Exposed schemas → add `boundary`.
+
+create schema if not exists boundary;
 
 
 -- ---------------------------------------------------------------------------------------------------------
 -- Helpers
 -- ---------------------------------------------------------------------------------------------------------
-create or replace function public.prevent_mutation() returns trigger
+create or replace function boundary.prevent_mutation() returns trigger
 language plpgsql as $$
 begin
   raise exception '% is immutable: % is not allowed', tg_table_name, tg_op using errcode = '55000';
 end $$;
 
-create or replace function public.touch_updated_at() returns trigger
+create or replace function boundary.touch_updated_at() returns trigger
 language plpgsql as $$
 begin
   new.updated_at := now();
@@ -22,7 +28,7 @@ end $$;
 -- ---------------------------------------------------------------------------------------------------------
 -- Reference data
 -- ---------------------------------------------------------------------------------------------------------
-create table public.rules_configs (
+create table boundary.rules_configs (
   id text not null,
   version text not null,
   name text not null,
@@ -40,7 +46,7 @@ create table public.rules_configs (
   constraint verified_needs_timestamp check (status <> 'verified' or verified_at is not null)
 );
 
-create table public.team_rules_configs (
+create table boundary.team_rules_configs (
   id text not null,
   version text not null,
   status text not null check (status in ('draft', 'reviewed', 'verified')),
@@ -50,7 +56,7 @@ create table public.team_rules_configs (
   primary key (id, version)
 );
 
-create table public.teams (
+create table boundary.teams (
   id text primary key,
   competition text not null check (competition in ('IPL', 'WPL')),
   name text not null,
@@ -58,7 +64,7 @@ create table public.teams (
   unique (competition, name)
 );
 
-create table public.players (
+create table boundary.players (
   id text primary key,                    -- Cricsheet registry id, or provider id
   name text not null,
   gender text not null check (gender in ('male', 'female')),
@@ -66,7 +72,7 @@ create table public.players (
   created_at timestamptz not null default now()
 );
 
-create table public.matches (
+create table boundary.matches (
   id text primary key,
   competition text not null check (competition in ('IPL', 'WPL')),
   origin text not null check (origin in ('cricsheet_replay', 'provider', 'csv_import', 'sim_replay')),
@@ -93,12 +99,12 @@ create table public.matches (
   created_at timestamptz not null default now(),
   updated_at timestamptz not null default now()
 );
-create index matches_competition_date_idx on public.matches (competition, match_date);
-create index matches_status_idx on public.matches (status, start_time_utc);
-create trigger matches_touch before update on public.matches for each row execute function public.touch_updated_at();
+create index matches_competition_date_idx on boundary.matches (competition, match_date);
+create index matches_status_idx on boundary.matches (status, start_time_utc);
+create trigger matches_touch before update on boundary.matches for each row execute function boundary.touch_updated_at();
 
-create table public.match_player_pool (
-  match_id text not null references public.matches (id) on delete cascade,
+create table boundary.match_player_pool (
+  match_id text not null references boundary.matches (id) on delete cascade,
   player_id text not null,
   player_name text not null,
   team text not null,
@@ -110,7 +116,7 @@ create table public.match_player_pool (
   primary key (match_id, player_id)
 );
 
-create table public.model_versions (
+create table boundary.model_versions (
   id text primary key,
   name text not null,
   kind text not null,
@@ -128,23 +134,23 @@ create table public.model_versions (
   created_at timestamptz not null default now()
 );
 
-create table public.model_activations (
+create table boundary.model_activations (
   id uuid primary key default gen_random_uuid(),
   competition text not null check (competition in ('IPL', 'WPL')),
-  model_version_id text not null references public.model_versions (id),
+  model_version_id text not null references boundary.model_versions (id),
   params jsonb not null default '{}',
   activated_at timestamptz not null default now(),
   activated_by text not null,
   reason text not null,
-  previous_model_version_id text references public.model_versions (id),
+  previous_model_version_id text references boundary.model_versions (id),
   previous_params jsonb
 );
-create index model_activations_comp_idx on public.model_activations (competition, activated_at desc);
+create index model_activations_comp_idx on boundary.model_activations (competition, activated_at desc);
 
 -- ---------------------------------------------------------------------------------------------------------
 -- Immutable decision-time snapshots and predictions
 -- ---------------------------------------------------------------------------------------------------------
-create table public.match_data_snapshots (
+create table boundary.match_data_snapshots (
   id uuid primary key,
   match_id text not null,
   competition text not null check (competition in ('IPL', 'WPL')),
@@ -162,20 +168,20 @@ create table public.match_data_snapshots (
   content_hash text not null,
   created_by text not null,
   created_at timestamptz not null default now(),
-  foreign key (rules_config_id, rules_config_version) references public.rules_configs (id, version)
+  foreign key (rules_config_id, rules_config_version) references boundary.rules_configs (id, version)
 );
-create index snapshots_match_idx on public.match_data_snapshots (match_id, snapshot_at desc);
+create index snapshots_match_idx on boundary.match_data_snapshots (match_id, snapshot_at desc);
 
-create table public.player_match_features (
-  snapshot_id uuid not null references public.match_data_snapshots (id),
+create table boundary.player_match_features (
+  snapshot_id uuid not null references boundary.match_data_snapshots (id),
   player_id text not null,
   feature_schema_version text not null,
   features jsonb not null,
   primary key (snapshot_id, player_id)
 );
 
-create table public.player_predictions (
-  snapshot_id uuid not null references public.match_data_snapshots (id),
+create table boundary.player_predictions (
+  snapshot_id uuid not null references boundary.match_data_snapshots (id),
   player_id text not null,
   model_version_id text not null,
   mean numeric not null,
@@ -190,11 +196,11 @@ create table public.player_predictions (
 -- ---------------------------------------------------------------------------------------------------------
 -- User-owned teams and optimizer recommendations (immutable versions)
 -- ---------------------------------------------------------------------------------------------------------
-create table public.user_teams (
+create table boundary.user_teams (
   id uuid primary key,
   user_id uuid not null references auth.users (id) on delete cascade,
   match_id text not null,
-  snapshot_id uuid not null references public.match_data_snapshots (id),
+  snapshot_id uuid not null references boundary.match_data_snapshots (id),
   captain_id text not null,
   vice_captain_id text not null,
   validation jsonb not null,
@@ -202,20 +208,20 @@ create table public.user_teams (
   created_at timestamptz not null default now(),
   check (captain_id <> vice_captain_id)
 );
-create index user_teams_user_match_idx on public.user_teams (user_id, match_id, created_at desc);
+create index user_teams_user_match_idx on boundary.user_teams (user_id, match_id, created_at desc);
 
-create table public.user_team_players (
-  user_team_id uuid not null references public.user_teams (id) on delete cascade,
+create table boundary.user_team_players (
+  user_team_id uuid not null references boundary.user_teams (id) on delete cascade,
   player_id text not null,
   multiplier numeric not null default 1,
   primary key (user_team_id, player_id)
 );
 
-create table public.optimizer_recommendations (
+create table boundary.optimizer_recommendations (
   id uuid primary key,
   user_id uuid references auth.users (id) on delete cascade, -- null = produced by background jobs
   match_id text not null,
-  snapshot_id uuid not null references public.match_data_snapshots (id),
+  snapshot_id uuid not null references boundary.match_data_snapshots (id),
   model_version_id text not null,
   captain_id text not null,
   vice_captain_id text not null,
@@ -235,10 +241,10 @@ create table public.optimizer_recommendations (
   created_at timestamptz not null default now(),
   check (captain_id <> vice_captain_id)
 );
-create index optimizer_recs_user_match_idx on public.optimizer_recommendations (user_id, match_id, created_at desc);
+create index optimizer_recs_user_match_idx on boundary.optimizer_recommendations (user_id, match_id, created_at desc);
 
-create table public.recommendation_players (
-  recommendation_id uuid not null references public.optimizer_recommendations (id) on delete cascade,
+create table boundary.recommendation_players (
+  recommendation_id uuid not null references boundary.optimizer_recommendations (id) on delete cascade,
   player_id text not null,
   multiplier numeric not null default 1,
   primary key (recommendation_id, player_id)
@@ -247,7 +253,7 @@ create table public.recommendation_players (
 -- ---------------------------------------------------------------------------------------------------------
 -- Post-match actuals and evaluations
 -- ---------------------------------------------------------------------------------------------------------
-create table public.actual_player_points (
+create table boundary.actual_player_points (
   id uuid primary key,
   user_id uuid references auth.users (id) on delete cascade, -- null = produced by background jobs
   match_id text not null,
@@ -260,9 +266,9 @@ create table public.actual_player_points (
   rules_config_id text,
   created_at timestamptz not null default now()
 );
-create index actual_points_lookup_idx on public.actual_player_points (user_id, match_id, player_id, created_at desc);
+create index actual_points_lookup_idx on boundary.actual_player_points (user_id, match_id, player_id, created_at desc);
 
-create table public.team_evaluations (
+create table boundary.team_evaluations (
   id uuid primary key,
   user_id uuid references auth.users (id) on delete cascade, -- null = produced by background jobs
   match_id text not null,
@@ -271,8 +277,8 @@ create table public.team_evaluations (
   unique nulls not distinct (user_id, match_id)
 );
 
-create table public.player_evaluations (
-  evaluation_id uuid not null references public.team_evaluations (id) on delete cascade,
+create table boundary.player_evaluations (
+  evaluation_id uuid not null references boundary.team_evaluations (id) on delete cascade,
   player_id text not null,
   predicted numeric not null,
   actual numeric not null,
@@ -285,7 +291,7 @@ create table public.player_evaluations (
 -- ---------------------------------------------------------------------------------------------------------
 -- Learning loop
 -- ---------------------------------------------------------------------------------------------------------
-create table public.error_patterns (
+create table boundary.error_patterns (
   id uuid primary key,
   competition text not null check (competition in ('IPL', 'WPL')),
   segment_type text not null,
@@ -300,9 +306,9 @@ create table public.error_patterns (
   model_version_id text not null,
   detected_at timestamptz not null default now()
 );
-create index error_patterns_comp_idx on public.error_patterns (competition, source);
+create index error_patterns_comp_idx on boundary.error_patterns (competition, source);
 
-create table public.model_change_proposals (
+create table boundary.model_change_proposals (
   id uuid primary key,
   competition text not null check (competition in ('IPL', 'WPL')),
   base_model_version_id text not null,
@@ -316,9 +322,9 @@ create table public.model_change_proposals (
   decided_by text
 );
 
-create table public.model_change_evaluations (
+create table boundary.model_change_evaluations (
   id uuid primary key,
-  proposal_id uuid not null references public.model_change_proposals (id),
+  proposal_id uuid not null references boundary.model_change_proposals (id),
   eval_window text not null,
   label_source text not null,
   n int not null,
@@ -334,7 +340,7 @@ create table public.model_change_evaluations (
 -- ---------------------------------------------------------------------------------------------------------
 -- Autonomous pipeline: prepared analyses, job runs, system state, weight profiles
 -- ---------------------------------------------------------------------------------------------------------
-create table public.prepared_analyses (
+create table boundary.prepared_analyses (
   id uuid primary key,
   match_id text not null,
   competition text not null check (competition in ('IPL', 'WPL')),
@@ -343,8 +349,8 @@ create table public.prepared_analyses (
   prepared_at timestamptz not null,
   clock_at timestamptz not null,
   trigger text not null check (trigger in ('scheduled', 'fixture_change', 'lineup_announced', 'model_change', 'manual')),
-  snapshot_id uuid not null references public.match_data_snapshots (id),
-  recommendation_id uuid references public.optimizer_recommendations (id),
+  snapshot_id uuid not null references boundary.match_data_snapshots (id),
+  recommendation_id uuid references boundary.optimizer_recommendations (id),
   infeasibility jsonb,
   suitability jsonb not null,
   inputs_hash text not null,
@@ -352,9 +358,9 @@ create table public.prepared_analyses (
   model_version_id text not null,
   unique (match_id, version)
 );
-create index prepared_analyses_match_idx on public.prepared_analyses (match_id, prepared_at desc);
+create index prepared_analyses_match_idx on boundary.prepared_analyses (match_id, prepared_at desc);
 
-create table public.job_runs (
+create table boundary.job_runs (
   id uuid primary key,
   job text not null,
   key text not null,
@@ -367,16 +373,16 @@ create table public.job_runs (
   error text,
   tick_id uuid not null
 );
-create index job_runs_job_idx on public.job_runs (job, started_at desc);
-create unique index job_runs_success_once on public.job_runs (job, key) where status = 'succeeded';
+create index job_runs_job_idx on boundary.job_runs (job, started_at desc);
+create unique index job_runs_success_once on boundary.job_runs (job, key) where status = 'succeeded';
 
-create table public.system_state (
+create table boundary.system_state (
   key text primary key,
   value jsonb not null,
   updated_at timestamptz not null default now()
 );
 
-create table public.weight_profiles (
+create table boundary.weight_profiles (
   id uuid primary key,
   competition text not null check (competition in ('IPL', 'WPL')),
   owner text not null,
@@ -391,7 +397,7 @@ create table public.weight_profiles (
 -- ---------------------------------------------------------------------------------------------------------
 -- Notifications and audit
 -- ---------------------------------------------------------------------------------------------------------
-create table public.notification_preferences (
+create table boundary.notification_preferences (
   user_id uuid primary key references auth.users (id) on delete cascade,
   email text,
   phone text,
@@ -400,7 +406,7 @@ create table public.notification_preferences (
   updated_at timestamptz not null default now()
 );
 
-create table public.scheduled_notifications (
+create table boundary.scheduled_notifications (
   id uuid primary key,
   user_id uuid not null references auth.users (id) on delete cascade,
   match_id text not null,
@@ -414,9 +420,9 @@ create table public.scheduled_notifications (
   provider text,
   created_at timestamptz not null default now()
 );
-create index scheduled_notifications_due_idx on public.scheduled_notifications (status, scheduled_for);
+create index scheduled_notifications_due_idx on boundary.scheduled_notifications (status, scheduled_for);
 
-create table public.audit_logs (
+create table boundary.audit_logs (
   id uuid primary key default gen_random_uuid(),
   at timestamptz not null default now(),
   actor text not null,
@@ -425,111 +431,113 @@ create table public.audit_logs (
   entity_id text not null,
   details jsonb not null default '{}'
 );
-create index audit_logs_at_idx on public.audit_logs (at desc);
+create index audit_logs_at_idx on boundary.audit_logs (at desc);
 
 -- ---------------------------------------------------------------------------------------------------------
 -- Immutability
 -- ---------------------------------------------------------------------------------------------------------
-create trigger snapshots_immutable before update or delete on public.match_data_snapshots for each row execute function public.prevent_mutation();
-create trigger features_immutable before update or delete on public.player_match_features for each row execute function public.prevent_mutation();
-create trigger predictions_immutable before update or delete on public.player_predictions for each row execute function public.prevent_mutation();
-create trigger user_teams_immutable before update on public.user_teams for each row execute function public.prevent_mutation();
-create trigger user_team_players_immutable before update on public.user_team_players for each row execute function public.prevent_mutation();
-create trigger recs_immutable before update on public.optimizer_recommendations for each row execute function public.prevent_mutation();
-create trigger rec_players_immutable before update on public.recommendation_players for each row execute function public.prevent_mutation();
-create trigger actuals_immutable before update on public.actual_player_points for each row execute function public.prevent_mutation();
-create trigger model_evals_immutable before update or delete on public.model_change_evaluations for each row execute function public.prevent_mutation();
-create trigger prepared_immutable before update or delete on public.prepared_analyses for each row execute function public.prevent_mutation();
-create trigger activations_immutable before update or delete on public.model_activations for each row execute function public.prevent_mutation();
+create trigger snapshots_immutable before update or delete on boundary.match_data_snapshots for each row execute function boundary.prevent_mutation();
+create trigger features_immutable before update or delete on boundary.player_match_features for each row execute function boundary.prevent_mutation();
+create trigger predictions_immutable before update or delete on boundary.player_predictions for each row execute function boundary.prevent_mutation();
+create trigger user_teams_immutable before update on boundary.user_teams for each row execute function boundary.prevent_mutation();
+create trigger user_team_players_immutable before update on boundary.user_team_players for each row execute function boundary.prevent_mutation();
+create trigger recs_immutable before update on boundary.optimizer_recommendations for each row execute function boundary.prevent_mutation();
+create trigger rec_players_immutable before update on boundary.recommendation_players for each row execute function boundary.prevent_mutation();
+create trigger actuals_immutable before update on boundary.actual_player_points for each row execute function boundary.prevent_mutation();
+create trigger model_evals_immutable before update or delete on boundary.model_change_evaluations for each row execute function boundary.prevent_mutation();
+create trigger prepared_immutable before update or delete on boundary.prepared_analyses for each row execute function boundary.prevent_mutation();
+create trigger activations_immutable before update or delete on boundary.model_activations for each row execute function boundary.prevent_mutation();
 
 -- ---------------------------------------------------------------------------------------------------------
 -- Row Level Security
 -- ---------------------------------------------------------------------------------------------------------
-alter table public.rules_configs enable row level security;
-alter table public.team_rules_configs enable row level security;
-alter table public.teams enable row level security;
-alter table public.players enable row level security;
-alter table public.matches enable row level security;
-alter table public.match_player_pool enable row level security;
-alter table public.model_versions enable row level security;
-alter table public.model_activations enable row level security;
-alter table public.match_data_snapshots enable row level security;
-alter table public.player_match_features enable row level security;
-alter table public.player_predictions enable row level security;
-alter table public.user_teams enable row level security;
-alter table public.user_team_players enable row level security;
-alter table public.optimizer_recommendations enable row level security;
-alter table public.recommendation_players enable row level security;
-alter table public.actual_player_points enable row level security;
-alter table public.team_evaluations enable row level security;
-alter table public.player_evaluations enable row level security;
-alter table public.error_patterns enable row level security;
-alter table public.model_change_proposals enable row level security;
-alter table public.model_change_evaluations enable row level security;
-alter table public.notification_preferences enable row level security;
-alter table public.scheduled_notifications enable row level security;
-alter table public.audit_logs enable row level security;
-alter table public.prepared_analyses enable row level security;
-alter table public.job_runs enable row level security;
-alter table public.system_state enable row level security;
-alter table public.weight_profiles enable row level security;
+alter table boundary.rules_configs enable row level security;
+alter table boundary.team_rules_configs enable row level security;
+alter table boundary.teams enable row level security;
+alter table boundary.players enable row level security;
+alter table boundary.matches enable row level security;
+alter table boundary.match_player_pool enable row level security;
+alter table boundary.model_versions enable row level security;
+alter table boundary.model_activations enable row level security;
+alter table boundary.match_data_snapshots enable row level security;
+alter table boundary.player_match_features enable row level security;
+alter table boundary.player_predictions enable row level security;
+alter table boundary.user_teams enable row level security;
+alter table boundary.user_team_players enable row level security;
+alter table boundary.optimizer_recommendations enable row level security;
+alter table boundary.recommendation_players enable row level security;
+alter table boundary.actual_player_points enable row level security;
+alter table boundary.team_evaluations enable row level security;
+alter table boundary.player_evaluations enable row level security;
+alter table boundary.error_patterns enable row level security;
+alter table boundary.model_change_proposals enable row level security;
+alter table boundary.model_change_evaluations enable row level security;
+alter table boundary.notification_preferences enable row level security;
+alter table boundary.scheduled_notifications enable row level security;
+alter table boundary.audit_logs enable row level security;
+alter table boundary.prepared_analyses enable row level security;
+alter table boundary.job_runs enable row level security;
+alter table boundary.system_state enable row level security;
+alter table boundary.weight_profiles enable row level security;
 
 -- Public, read-only reference data (writes via service role only).
-create policy "read rules" on public.rules_configs for select to anon, authenticated using (true);
-create policy "read team rules" on public.team_rules_configs for select to anon, authenticated using (true);
-create policy "read teams" on public.teams for select to anon, authenticated using (true);
-create policy "read players" on public.players for select to anon, authenticated using (true);
-create policy "read matches" on public.matches for select to anon, authenticated using (true);
-create policy "read pool" on public.match_player_pool for select to anon, authenticated using (true);
-create policy "read models" on public.model_versions for select to anon, authenticated using (true);
-create policy "read activations" on public.model_activations for select to authenticated using (true);
-create policy "read snapshots" on public.match_data_snapshots for select to authenticated using (true);
-create policy "read features" on public.player_match_features for select to authenticated using (true);
-create policy "read predictions" on public.player_predictions for select to authenticated using (true);
-create policy "read patterns" on public.error_patterns for select to authenticated using (true);
-create policy "read proposals" on public.model_change_proposals for select to authenticated using (true);
-create policy "read model evals" on public.model_change_evaluations for select to authenticated using (true);
+create policy "read rules" on boundary.rules_configs for select to anon, authenticated using (true);
+create policy "read team rules" on boundary.team_rules_configs for select to anon, authenticated using (true);
+create policy "read teams" on boundary.teams for select to anon, authenticated using (true);
+create policy "read players" on boundary.players for select to anon, authenticated using (true);
+create policy "read matches" on boundary.matches for select to anon, authenticated using (true);
+create policy "read pool" on boundary.match_player_pool for select to anon, authenticated using (true);
+create policy "read models" on boundary.model_versions for select to anon, authenticated using (true);
+create policy "read activations" on boundary.model_activations for select to authenticated using (true);
+create policy "read snapshots" on boundary.match_data_snapshots for select to authenticated using (true);
+create policy "read features" on boundary.player_match_features for select to authenticated using (true);
+create policy "read predictions" on boundary.player_predictions for select to authenticated using (true);
+create policy "read patterns" on boundary.error_patterns for select to authenticated using (true);
+create policy "read proposals" on boundary.model_change_proposals for select to authenticated using (true);
+create policy "read model evals" on boundary.model_change_evaluations for select to authenticated using (true);
 
 -- User-owned rows: a user can read and create only their own rows. No update/delete of immutable rows.
-create policy "own teams select" on public.user_teams for select to authenticated using (user_id = auth.uid());
-create policy "own teams insert" on public.user_teams for insert to authenticated with check (user_id = auth.uid());
-create policy "own team players select" on public.user_team_players for select to authenticated
-  using (exists (select 1 from public.user_teams t where t.id = user_team_id and t.user_id = auth.uid()));
-create policy "own team players insert" on public.user_team_players for insert to authenticated
-  with check (exists (select 1 from public.user_teams t where t.id = user_team_id and t.user_id = auth.uid()));
+create policy "own teams select" on boundary.user_teams for select to authenticated using (user_id = auth.uid());
+create policy "own teams insert" on boundary.user_teams for insert to authenticated with check (user_id = auth.uid());
+create policy "own team players select" on boundary.user_team_players for select to authenticated
+  using (exists (select 1 from boundary.user_teams t where t.id = user_team_id and t.user_id = auth.uid()));
+create policy "own team players insert" on boundary.user_team_players for insert to authenticated
+  with check (exists (select 1 from boundary.user_teams t where t.id = user_team_id and t.user_id = auth.uid()));
 
-create policy "own or system recs select" on public.optimizer_recommendations for select to authenticated using (user_id = auth.uid() or user_id is null);
-create policy "own recs insert" on public.optimizer_recommendations for insert to authenticated with check (user_id = auth.uid());
-create policy "own rec players select" on public.recommendation_players for select to authenticated
-  using (exists (select 1 from public.optimizer_recommendations r where r.id = recommendation_id and (r.user_id = auth.uid() or r.user_id is null)));
-create policy "own rec players insert" on public.recommendation_players for insert to authenticated
-  with check (exists (select 1 from public.optimizer_recommendations r where r.id = recommendation_id and r.user_id = auth.uid()));
+create policy "own or system recs select" on boundary.optimizer_recommendations for select to authenticated using (user_id = auth.uid() or user_id is null);
+create policy "own recs insert" on boundary.optimizer_recommendations for insert to authenticated with check (user_id = auth.uid());
+create policy "own rec players select" on boundary.recommendation_players for select to authenticated
+  using (exists (select 1 from boundary.optimizer_recommendations r where r.id = recommendation_id and (r.user_id = auth.uid() or r.user_id is null)));
+create policy "own rec players insert" on boundary.recommendation_players for insert to authenticated
+  with check (exists (select 1 from boundary.optimizer_recommendations r where r.id = recommendation_id and r.user_id = auth.uid()));
 
-create policy "own or system actuals select" on public.actual_player_points for select to authenticated using (user_id = auth.uid() or user_id is null);
-create policy "own actuals insert" on public.actual_player_points for insert to authenticated with check (user_id = auth.uid());
+create policy "own or system actuals select" on boundary.actual_player_points for select to authenticated using (user_id = auth.uid() or user_id is null);
+create policy "own actuals insert" on boundary.actual_player_points for insert to authenticated with check (user_id = auth.uid());
 
-create policy "own or system evals select" on public.team_evaluations for select to authenticated using (user_id = auth.uid() or user_id is null);
-create policy "own evals insert" on public.team_evaluations for insert to authenticated with check (user_id = auth.uid());
-create policy "own evals update" on public.team_evaluations for update to authenticated using (user_id = auth.uid()) with check (user_id = auth.uid());
-create policy "own player evals select" on public.player_evaluations for select to authenticated
-  using (exists (select 1 from public.team_evaluations e where e.id = evaluation_id and e.user_id = auth.uid()));
-create policy "own player evals write" on public.player_evaluations for insert to authenticated
-  with check (exists (select 1 from public.team_evaluations e where e.id = evaluation_id and e.user_id = auth.uid()));
-create policy "own player evals delete" on public.player_evaluations for delete to authenticated
-  using (exists (select 1 from public.team_evaluations e where e.id = evaluation_id and e.user_id = auth.uid()));
+create policy "own or system evals select" on boundary.team_evaluations for select to authenticated using (user_id = auth.uid() or user_id is null);
+create policy "own evals insert" on boundary.team_evaluations for insert to authenticated with check (user_id = auth.uid());
+create policy "own evals update" on boundary.team_evaluations for update to authenticated using (user_id = auth.uid()) with check (user_id = auth.uid());
+create policy "own player evals select" on boundary.player_evaluations for select to authenticated
+  using (exists (select 1 from boundary.team_evaluations e where e.id = evaluation_id and e.user_id = auth.uid()));
+create policy "own player evals write" on boundary.player_evaluations for insert to authenticated
+  with check (exists (select 1 from boundary.team_evaluations e where e.id = evaluation_id and e.user_id = auth.uid()));
+create policy "own player evals delete" on boundary.player_evaluations for delete to authenticated
+  using (exists (select 1 from boundary.team_evaluations e where e.id = evaluation_id and e.user_id = auth.uid()));
 
-create policy "own prefs" on public.notification_preferences for all to authenticated using (user_id = auth.uid()) with check (user_id = auth.uid());
-create policy "own notifications select" on public.scheduled_notifications for select to authenticated using (user_id = auth.uid());
-create policy "read prepared" on public.prepared_analyses for select to authenticated using (true);
-create policy "read job runs" on public.job_runs for select to authenticated using (true);
-create policy "read weight profiles" on public.weight_profiles for select to authenticated using (owner = 'system' or owner = auth.uid()::text);
-create policy "own weight profiles insert" on public.weight_profiles for insert to authenticated with check (owner = auth.uid()::text and status = 'candidate');
+create policy "own prefs" on boundary.notification_preferences for all to authenticated using (user_id = auth.uid()) with check (user_id = auth.uid());
+create policy "own notifications select" on boundary.scheduled_notifications for select to authenticated using (user_id = auth.uid());
+create policy "read prepared" on boundary.prepared_analyses for select to authenticated using (true);
+create policy "read job runs" on boundary.job_runs for select to authenticated using (true);
+create policy "read weight profiles" on boundary.weight_profiles for select to authenticated using (owner = 'system' or owner = auth.uid()::text);
+create policy "own weight profiles insert" on boundary.weight_profiles for insert to authenticated with check (owner = auth.uid()::text and status = 'candidate');
 -- audit_logs, system_state: no policies => only the service role can read/write.
 
 -- Table privileges (Supabase grants these by default; explicit for portability). RLS still applies.
-grant usage on schema public to anon, authenticated;
-grant select on all tables in schema public to anon, authenticated;
-grant insert on public.weight_profiles, public.user_teams, public.user_team_players, public.optimizer_recommendations, public.recommendation_players,
-  public.actual_player_points, public.team_evaluations, public.player_evaluations, public.notification_preferences to authenticated;
-grant update on public.team_evaluations, public.notification_preferences, public.user_teams, public.actual_player_points to authenticated;
-grant delete on public.player_evaluations, public.notification_preferences, public.user_teams to authenticated;
+grant usage on schema boundary to anon, authenticated, service_role;
+grant select on all tables in schema boundary to anon, authenticated;
+grant all on all tables in schema boundary to service_role;
+grant all on all routines in schema boundary to service_role;
+grant insert on boundary.weight_profiles, boundary.user_teams, boundary.user_team_players, boundary.optimizer_recommendations, boundary.recommendation_players,
+  boundary.actual_player_points, boundary.team_evaluations, boundary.player_evaluations, boundary.notification_preferences to authenticated;
+grant update on boundary.team_evaluations, boundary.notification_preferences, boundary.user_teams, boundary.actual_player_points to authenticated;
+grant delete on boundary.player_evaluations, boundary.notification_preferences, boundary.user_teams to authenticated;

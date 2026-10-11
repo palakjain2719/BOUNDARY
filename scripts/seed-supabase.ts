@@ -14,7 +14,8 @@ if (!url || !key) {
   console.error("Set NEXT_PUBLIC_SUPABASE_URL and SUPABASE_SERVICE_ROLE_KEY (server-side only) to seed.");
   process.exit(1);
 }
-const sb = createClient(url, key, { auth: { persistSession: false } });
+const schema = process.env.SUPABASE_DB_SCHEMA || "boundary";
+const sb = createClient(url, key, { auth: { persistSession: false }, db: { schema } });
 
 async function upsert(table: string, rows: Record<string, unknown>[], onConflict?: string) {
   for (let i = 0; i < rows.length; i += 500) {

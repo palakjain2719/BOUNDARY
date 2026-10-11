@@ -5,13 +5,14 @@ Nothing in this repository has been deployed yet. These are the steps to do it.
 ## 1. Supabase
 
 1. Create a project at https://supabase.com and note the project URL, `anon` key and `service_role` key (Project Settings → API).
-2. Apply the migration. With the Supabase CLI: `supabase link --project-ref <ref>` then `supabase db push`. Or paste `supabase/migrations/20261011000000_init.sql` into the SQL editor and run it.
-3. Seed reference tables (rules configs, team rules, model versions, players, archived matches):
+2. Apply the migration. All tables are created in a dedicated **`boundary` schema**, so the app can share a Supabase project with other apps without touching their `public` tables. With the Supabase CLI: `supabase link --project-ref <ref>` then `supabase db push`. Or paste `supabase/migrations/20261011000000_init.sql` into the SQL editor and run it.
+3. Expose the schema to the API: Project Settings → Data API → **Exposed schemas** → add `boundary` → Save.
+4. Seed reference tables (rules configs, team rules, model versions, players, archived matches):
    ```bash
    NEXT_PUBLIC_SUPABASE_URL=... SUPABASE_SERVICE_ROLE_KEY=... npm run db:seed
    ```
-4. Auth → URL configuration: add your site URL and `https://<your-domain>/matches` as a redirect URL (magic-link sign-in).
-5. After first sign-in, copy your user id (Auth → Users) into `ADMIN_USER_IDS`.
+5. Auth → URL configuration: add your site URL and `https://<your-domain>/matches` as a redirect URL (magic-link sign-in).
+6. After first sign-in, copy your user id (Auth → Users) into `ADMIN_USER_IDS`.
 
 The service-role key is only read on the server (`src/lib/env.ts`, `src/lib/store/supabase.ts`, `scripts/seed-supabase.ts`). Never prefix it with `NEXT_PUBLIC_`.
 
