@@ -460,6 +460,11 @@ export class SupabaseRepository implements Repository {
   }
 
   async setState(key: string, value: unknown) {
+    // null/undefined clears the key (the column is NOT NULL), e.g. releasing the pipeline lock.
+    if (value == null) {
+      must(await this.service.from("system_state").delete().eq("key", key), "clear state");
+      return;
+    }
     must(await this.service.from("system_state").upsert({ key, value, updated_at: new Date().toISOString() }), "set state");
   }
 
