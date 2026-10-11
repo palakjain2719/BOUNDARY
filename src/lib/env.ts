@@ -56,12 +56,14 @@ export function integrationStatuses(): IntegrationStatus[] {
     },
     {
       name: "Cricket data provider",
-      state: env.cricketProvider === "cricapi" && env.cricApiKey ? "configured_unverified" : "disconnected",
+      state: (env.cricketProvider === "cricapi" && env.cricApiKey) || (env.cricketProvider === "google-search" && isGeminiConfigured()) ? "configured_unverified" : "disconnected",
       detail:
         env.cricketProvider === "cricapi" && env.cricApiKey
           ? "CricAPI adapter enabled. Coverage depends on your plan; verify on Settings."
-          : "No live provider. Live/upcoming fixtures come only from CSV import; history is Cricsheet replay.",
-      envVars: ["CRICKET_PROVIDER", "CRICAPI_KEY"],
+          : env.cricketProvider === "google-search" && isGeminiConfigured()
+            ? "Live fixtures detected with Google Search via Gemini grounding (source-cited, unverified). Uses the Gemini key."
+            : "No live provider. Live/upcoming fixtures come only from CSV import; history is Cricsheet replay.",
+      envVars: ["CRICKET_PROVIDER", "CRICAPI_KEY", "GEMINI_API_KEY"],
     },
     {
       name: "Weather (Open-Meteo)",

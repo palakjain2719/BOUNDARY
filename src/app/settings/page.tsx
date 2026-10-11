@@ -12,6 +12,7 @@ import { liveProvider, replayProvider } from "@/lib/providers";
 import { FIXTURE_CSV_HEADER, POOL_CSV_HEADER } from "@/lib/providers/csv-import";
 import { listRules } from "@/lib/scoring/registry";
 import { getRepository } from "@/lib/store";
+import { DAILY_LIMITS, usedToday } from "@/lib/ai/budget";
 
 export const metadata: Metadata = { title: "Settings & admin" };
 export const dynamic = "force-dynamic";
@@ -45,6 +46,10 @@ export default async function SettingsPage() {
   const audit = await repo.listAudit(25);
   const fixtures = await repo.listFixtures();
   const providers = [replayProvider(), liveProvider()].filter(Boolean);
+  const usage = {
+    search: await usedToday("google_search", repo),
+    explain: await usedToday("gemini_explanation", repo),
+  };
 
   return (
     <>
@@ -64,6 +69,9 @@ export default async function SettingsPage() {
               </li>
             ))}
           </ul>
+          <p className="mt-3 rounded-2xl bg-pastel-green/60 p-3 text-sm">
+            <strong>Zero-cost guard (today, UTC):</strong> Google Search grounding {usage.search}/{DAILY_LIMITS.google_search()} · Gemini explanations {usage.explain}/{DAILY_LIMITS.gemini_explanation()}. Past a cap the app skips the call and uses deterministic fallbacks; a Google quota error (429) stops calls until the next day.
+          </p>
           <p className="mt-3 text-xs text-muted">
             Brand name is configurable with NEXT_PUBLIC_BRAND_NAME (currently “{env.brandName}”). Health JSON: <a className="underline" href="/api/health">/api/health</a>.
           </p>

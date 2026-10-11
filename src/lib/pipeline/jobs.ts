@@ -18,7 +18,7 @@ import { buildRecommendation } from "../match/actions";
 import { buildWorkspace } from "../match/workspace";
 import { getActiveModel, getModel, type ModelParams } from "../models/registry";
 import { processDueReminders, demoSender } from "../notifications";
-import { liveProvider } from "../providers";
+import { liveProvider, providerFixtureId } from "../providers";
 import { rankMatches } from "../recommendation/rank";
 import { getRules, reconstructedLabelStatus } from "../scoring/registry";
 import type { ActualPoint, Fixture, JobName, JobRun, PreparedAnalysis, Repository } from "../store/types";
@@ -118,12 +118,13 @@ const discoverFixtures: JobFn = async ({ repo, clock }) => {
   }
   const provider = liveProvider();
   if (!provider) return { source: "none", note: "No live provider configured; only CSV-imported fixtures are available." };
+  if ("budgetRepo" in provider) (provider as { budgetRepo: Repository | null }).budgetRepo = repo;
   const fixtures = await provider.searchFixtures();
   const supported = fixtures.filter((f) => f.competition !== "other");
   const r = await upsertDiscovered(
     repo,
     supported.map((f) => ({
-      id: `cricapi-${f.providerMatchId}`, competition: f.competition as Competition, date: f.date, startTimeUtc: f.startTimeUtc, startTimeAssumed: false,
+      id: providerFixtureId(provider.id, f.providerMatchId), competition: f.competition as Competition, date: f.date, startTimeUtc: f.startTimeUtc, startTimeAssumed: false,
       timezone: null, venue: f.venue, city: null, team1: f.team1, team2: f.team2, status: f.status, source: "provider" as const,
       providerMatchId: f.providerMatchId, importedBy: `provider:${provider.id}`,
     })),

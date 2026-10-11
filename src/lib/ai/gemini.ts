@@ -4,6 +4,8 @@
  * Model id comes from GEMINI_MODEL (check https://ai.google.dev/gemini-api/docs/models for current ids).
  */
 import { env, isGeminiConfigured } from "../env";
+import type { Repository } from "../store/types";
+import { blockForToday, tryConsume } from "./budget";
 
 export interface ExplanationResult {
   text: string;
@@ -31,8 +33,9 @@ export function toPlainProse(md: string): string {
     .trim();
 }
 
-export async function explainWithGemini(evidence: unknown, fallback: string, fetchImpl: typeof fetch = fetch): Promise<ExplanationResult> {
+export async function explainWithGemini(evidence: unknown, fallback: string, fetchImpl: typeof fetch = fetch, repo?: Repository | null): Promise<ExplanationResult> {
   if (!isGeminiConfigured()) return { text: fallback, source: "template" };
+  if (!(await tryConsume("gemini_explanation", repo))) return { text: fallback, source: "template", error: "Daily Gemini explanation cap reached (zero-cost guard)" };
   const url = `https://generativelanguage.googleapis.com/v1beta/models/${encodeURIComponent(env.geminiModel)}:generateContent`;
   const controller = new AbortController();
   const timer = setTimeout(() => controller.abort(), 12000);
@@ -48,6 +51,7 @@ export async function explainWithGemini(evidence: unknown, fallback: string, fet
       }),
       signal: controller.signal,
     });
+    if (res.status === 429) blockForToday("gemini_explanation");
     if (!res.ok) return { text: fallback, source: "template", error: `Gemini HTTP ${res.status}` };
     const json = (await res.json()) as { candidates?: { finishReason?: string; content?: { parts?: { text?: string; thought?: boolean }[] } }[] };
     const cand = json.candidates?.[0];

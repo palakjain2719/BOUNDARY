@@ -85,7 +85,7 @@ export async function buildRecommendation(repo: Repository, ws: Workspace, owner
     model: { id: ws.model.model.id, note: ws.model.model.notes },
   };
   const fallback = templateExplanation(ws, base);
-  const ex = await explainWithGemini(evidence, fallback);
+  const ex = await explainWithGemini(evidence, fallback, fetch, repo);
   const rec: OptimizerRecommendation = { ...base, explanationText: ex.text, explanationSource: ex.source };
   await repo.saveRecommendation(rec);
   await repo.audit({ actor: ownerId, action: "recommendation.created", entity: "optimizer_recommendation", entityId: rec.id, details: { matchId: ws.match.id, snapshotId: snapshot.id, explanation: ex.source, geminiError: ex.error ?? null, invalidCandidates: result.team.invalidCandidates } });

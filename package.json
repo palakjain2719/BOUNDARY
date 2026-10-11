@@ -17,7 +17,8 @@
     "data:build": "npm run data:ingest && npm run data:reconcile && npm run data:features && npm run ml:benchmark",
     "pipeline:tick": "tsx scripts/pipeline-tick.ts",
     "pipeline:daemon": "tsx scripts/pipeline-daemon.ts",
-    "db:seed": "tsx scripts/seed-supabase.ts"
+    "db:seed": "tsx scripts/seed-supabase.ts",
+    "live:check": "tsx scripts/check-live-fixtures.ts"
   },
   "dependencies": {
     "@supabase/supabase-js": "^2.117.3",

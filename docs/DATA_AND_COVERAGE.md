@@ -37,6 +37,9 @@ Nothing on the landing page or elsewhere is hardcoded. Coverage numbers come fro
 
 ## Provider coverage
 
+- **Live fixture detection (`CRICKET_PROVIDER=google-search`)** uses Gemini *Grounding with Google Search*, an authorised Google API — not a crawler (scraping Google results or cricket sites breaks their terms). A two-step flow asks Google a plain question (answers without real searches and sources are rejected), then converts the cited answer to JSON with no new facts. Every fixture must cite a page Google returned; results are labelled unverified. Squads/XIs use the same method; player-level results are not taken from search.
+- **Cost:** hard daily caps (`GOOGLE_SEARCH_MAX_PER_DAY`, default 20; `GEMINI_MAX_EXPLANATIONS_PER_DAY`, default 100), 429 → stop for the day, and 24 h backoff in the off-season. Google lists Search grounding for Gemini 3.x as unavailable on the free tier, with 5,000 searches/month free on paid projects and $14 per 1,000 after that (checked 2026-10-11); 20/day stays far below that. A project with no billing account cannot be charged.
+
 - No live provider is configured by default. The CricAPI adapter (`src/lib/providers/cricapi.ts`) follows the public v1 endpoints, but its response mapping is unverified until run with a key. It provides no fantasy credits.
 - Actual-result collection for provider fixtures needs a scorecard-to-events mapping that is **not implemented**. For those matches, import actuals via CSV on the review page. Cricsheet-archived matches are reconstructed automatically.
 - Pitch reports: no authorised source configured. The UI says so and nothing is inferred.

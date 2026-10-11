@@ -215,8 +215,11 @@ export async function buildWorkspace(
   if (fixture) {
     let imported = await repo.listFixturePool(fixture.id);
     if (!imported.length && fixture.source === "provider") {
-      const squad = await liveProvider()?.squad(fixture.id.slice("cricapi-".length)).catch(() => []);
-      imported = (squad ?? []).map((p) => ({ fixtureId: fixture.id, playerName: p.name, playerId: null, team: p.team, role: p.role ?? "BAT", credits: null, announced: null }));
+      const pid = fixture.providerMatchId ?? fixture.id.replace(/^cricapi-/, "");
+      const xi = await liveProvider()?.playingXI(pid).catch(() => null);
+      const squad = xi?.length ? xi : await liveProvider()?.squad(pid).catch(() => []);
+      if (xi?.length) phase = "post_toss";
+      imported = (squad ?? []).map((p) => ({ fixtureId: fixture.id, playerName: p.name, playerId: null, team: p.team, role: p.role ?? "BAT", credits: null, announced: xi?.length ? true : null }));
       if (squad?.some((p) => !p.role)) warnings.push("Some provider squad roles were missing and default to BAT.");
     }
     const names = nameIndex(data);
