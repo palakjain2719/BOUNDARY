@@ -7,7 +7,9 @@ import { IconBack } from "@/components/icons";
 import { ActualsForm } from "@/components/review/ActualsForm";
 import { PredVsActualChart, type RoleBar } from "@/components/review/PredVsActualChart";
 import { PlayerButton, PlayerModalProvider } from "@/components/player/PlayerModal";
-import { getSessionUser } from "@/lib/auth";
+import { getViewer } from "@/lib/auth";
+import { SignInCallout } from "@/components/SignInCallout";
+
 import { teamAbbr } from "@/lib/data/normalize";
 import { pts } from "@/lib/format";
 import { getReview } from "@/lib/match/actions";
@@ -47,8 +49,7 @@ function SideCard({ title, side, tone }: { title: string; side: TeamEvaluationSi
 
 export default async function ReviewPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
-  const user = await getSessionUser();
-  if (!user) return null;
+  const user = await getViewer();
   const repo = getRepository(user.accessToken);
   const clock = await getClock(repo);
   const loaded = await loadWorkspaceMatch(repo, id, clock);
@@ -177,7 +178,12 @@ export default async function ReviewPage({ params }: { params: Promise<{ id: str
           </section>
         )}
 
-        {review.unionPlayerIds.length > 0 && (
+        {user.guest && review.unionPlayerIds.length > 0 && (
+          <div className="mt-4">
+            <SignInCallout what="enter actual points or compare your own team" />
+          </div>
+        )}
+        {!user.guest && review.unionPlayerIds.length > 0 && (
           <details className="mt-4" open={!review.actuals.length}>
             <summary className="cursor-pointer text-sm font-semibold">Enter or correct actual points</summary>
             <div className="mt-2">

@@ -11,4 +11,4 @@ export const GET = route<{ playerId: string }>(async ({ req, repo, params }) => 
   if (!loaded) throw new HttpError(404, "Match not found");
   const profile = playerProfile(loaded.match.competition, decodeURIComponent(params.playerId), loaded.match.date);
   return json({ profile, competition: loaded.match.competition, beforeDate: loaded.match.date });
-});
+}, { public: true });

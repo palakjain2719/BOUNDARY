@@ -8,4 +8,4 @@ export const GET = route<{ id: string }>(async ({ repo, params }) => {
   const m = await loadWorkspaceMatch(repo, params.id, clock);
   if (!m) throw new HttpError(404, "Match not found");
   return json(await matchWeather(m.match.venue, m.match.date, new Date(), fetch, clock));
-});
+}, { public: true });

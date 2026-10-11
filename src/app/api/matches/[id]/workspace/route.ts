@@ -10,4 +10,4 @@ export const GET = route<{ id: string }>(async ({ req, repo, params }) => {
   });
   if (!ws) throw new HttpError(404, "Match not found");
   return json(ws);
-});
+}, { public: true });

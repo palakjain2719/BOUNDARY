@@ -14,6 +14,16 @@ export interface SessionUser {
   demo: boolean;
   accessToken: string | null;
   isAdmin: boolean;
+  /** Not signed in: can read shared analysis, cannot save anything personal. */
+  guest?: boolean;
+}
+
+export const GUEST_USER_ID = "guest";
+export const GUEST: SessionUser = { id: GUEST_USER_ID, displayName: "Guest", demo: false, accessToken: null, isAdmin: false, guest: true };
+
+/** The signed-in user, or a read-only guest. Pages showing shared data use this instead of blocking. */
+export async function getViewer(req?: Request): Promise<SessionUser> {
+  return (await getSessionUser(req)) ?? GUEST;
 }
 
 export async function getSessionUser(req?: Request): Promise<SessionUser | null> {

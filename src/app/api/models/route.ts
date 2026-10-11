@@ -7,4 +7,5 @@ export const GET = route(async ({ repo }) =>
     active: { IPL: await getActiveModel(repo, "IPL"), WPL: await getActiveModel(repo, "WPL") },
     activations: await repo.listActivations(),
   }),
+  { public: true },
 );

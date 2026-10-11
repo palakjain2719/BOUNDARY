@@ -11,7 +11,9 @@ import { ReasoningPanel, ValidationBadge } from "@/components/match/ReasoningPan
 import { TeamBuilder } from "@/components/match/TeamBuilder";
 import { PlayerButton, PlayerModalProvider } from "@/components/player/PlayerModal";
 import { IconBack } from "@/components/icons";
-import { getSessionUser } from "@/lib/auth";
+import { getViewer } from "@/lib/auth";
+import { SignInCallout } from "@/components/SignInCallout";
+
 import { COMPETITION_LABEL, type DecisionPhase } from "@/lib/data/types";
 import { teamAbbr } from "@/lib/data/normalize";
 import { formatClock, formatMatchTime } from "@/lib/format";
@@ -37,8 +39,7 @@ const FRESH = {
 export default async function MatchPage({ params, searchParams }: { params: Params; searchParams: SP }) {
   const { id } = await params;
   const sp = await searchParams;
-  const user = await getSessionUser();
-  if (!user) return <SignInPrompt />;
+  const user = await getViewer();
   const repo = getRepository(user.accessToken);
   const view = await loadMatchView(repo, user, id, sp.phase as DecisionPhase | undefined);
   if (!view) notFound();
@@ -132,7 +133,7 @@ export default async function MatchPage({ params, searchParams }: { params: Para
               Review result
             </Link>
           )}
-          {m.status === "upcoming" && m.startTimeUtc && (
+          {m.status === "upcoming" && m.startTimeUtc && !user.guest && (
             <ActionButton url="/api/notifications" body={{ action: "follow", matchId: id }} label="Remind me 1h before" className="btn btn-ghost" />
           )}
         </section>
@@ -206,12 +207,13 @@ export default async function MatchPage({ params, searchParams }: { params: Para
                   <h2 className="font-display text-2xl">Optimizer XI</h2>
                   <p className="mt-2 text-sm text-muted">This archived match was not prepared by the pipeline. Generate the optimizer team at this decision phase; it is saved as an immutable version.</p>
                   <div className="mt-4">
-                    <ActionButton url={`/api/matches/${id}/optimize`} body={{ phase: view.phase }} label="Generate optimizer XI" busyLabel="Optimising…" />
+                    {user.guest ? <SignInCallout what="generate an optimizer XI for this archived match" /> : <ActionButton url={`/api/matches/${id}/optimize`} body={{ phase: view.phase }} label="Generate optimizer XI" busyLabel="Optimising…" />}
                   </div>
                 </div>
               ))}
 
-            {tab === "mine" && (
+            {tab === "mine" && user.guest && <SignInCallout what="build and save your own XI" />}
+            {tab === "mine" && !user.guest && (
               <TeamBuilder
                 matchId={id}
                 phase={view.phase}
@@ -301,16 +303,5 @@ export default async function MatchPage({ params, searchParams }: { params: Para
         </div>
       </div>
     </PlayerModalProvider>
-  );
-}
-
-function SignInPrompt() {
-  return (
-    <div className="mx-auto max-w-lg px-4 py-16 text-center">
-      <h1 className="font-display text-3xl">Sign in to view prepared analysis</h1>
-      <Link href="/login" className="btn btn-primary mt-6">
-        Sign in
-      </Link>
-    </div>
   );
 }

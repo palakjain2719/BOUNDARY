@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { getSessionUser, type SessionUser } from "../auth";
+import { getSessionUser, GUEST, type SessionUser } from "../auth";
 import { getRepository } from "../store";
 import type { Repository } from "../store/types";
 
@@ -14,10 +14,10 @@ export function json(data: unknown, status = 200) {
 }
 
 /** Wrap a route: resolves the session + repository and converts errors to JSON responses. */
-export function route<C>(fn: (ctx: { req: Request; user: SessionUser; repo: Repository; params: C }) => Promise<Response>, opts: { admin?: boolean } = {}) {
+export function route<C>(fn: (ctx: { req: Request; user: SessionUser; repo: Repository; params: C }) => Promise<Response>, opts: { admin?: boolean; public?: boolean } = {}) {
   return async (req: Request, context: { params: Promise<C> }) => {
     try {
-      const user = await getSessionUser(req);
+      const user = (await getSessionUser(req)) ?? (opts.public ? GUEST : null);
       if (!user) throw new HttpError(401, "Sign in required");
       if (opts.admin && !user.isAdmin) throw new HttpError(403, "Admin permission required (ADMIN_USER_IDS)");
       const repo = getRepository(user.accessToken);

@@ -3,7 +3,7 @@ import type { Metadata } from "next";
 import { ClockBanner } from "@/components/ClockBanner";
 import { LoopRibbon } from "@/components/LoopRibbon";
 import { ActionButton } from "@/components/match/ActionButton";
-import { getSessionUser } from "@/lib/auth";
+import { getViewer } from "@/lib/auth";
 import type { Competition } from "@/lib/data/types";
 import { formatClock } from "@/lib/format";
 import { ACCEPTANCE, MIN_SUPPORT, WINDOWS } from "@/lib/learning/loop";
@@ -38,8 +38,7 @@ function aggregate(evals: TeamEvaluation[]) {
 const f = (n: number | null | undefined, d = 1) => (n == null ? "—" : n.toFixed(d));
 
 export default async function LearningPage() {
-  const user = await getSessionUser();
-  if (!user) return null;
+  const user = await getViewer();
   const repo = getRepository(user.accessToken);
   const bench = loadBenchmark();
   const models = builtinModels();

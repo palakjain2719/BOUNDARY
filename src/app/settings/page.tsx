@@ -3,7 +3,9 @@ import { ClockBanner } from "@/components/ClockBanner";
 import { ActionButton } from "@/components/match/ActionButton";
 import { ImportForm } from "@/components/settings/ImportForm";
 import { NotificationForm } from "@/components/settings/NotificationForm";
-import { getSessionUser } from "@/lib/auth";
+import { getViewer } from "@/lib/auth";
+import { SignInCallout } from "@/components/SignInCallout";
+
 import { env } from "@/lib/env";
 import { runIntegrationChecks } from "@/lib/health";
 import { formatClock, relativeTo } from "@/lib/format";
@@ -37,14 +39,13 @@ function Section({ id, title, children }: { id: string; title: string; children:
 }
 
 export default async function SettingsPage() {
-  const user = await getSessionUser();
-  if (!user) return null;
+  const user = await getViewer();
   const repo = getRepository(user.accessToken);
   const clock = await getClock(repo);
   const runs = await repo.listJobRuns({ limit: 40 });
   const pref = await repo.getNotificationPreference(user.id);
-  const scheduled = await repo.listScheduledNotifications({ userId: user.id });
-  const audit = await repo.listAudit(25);
+  const scheduled = user.guest ? [] : await repo.listScheduledNotifications({ userId: user.id });
+  const audit = user.isAdmin ? await repo.listAudit(25) : [];
   const fixtures = await repo.listFixtures();
   const providers = [replayProvider(), liveProvider()].filter(Boolean);
   const checks = await runIntegrationChecks();
@@ -145,7 +146,7 @@ export default async function SettingsPage() {
         </Section>
 
         <Section id="notifications" title="Reminders">
-          <NotificationForm pref={pref} live={env.notificationsLive} />
+          {user.guest ? <SignInCallout what="set up match reminders" /> : <NotificationForm pref={pref} live={env.notificationsLive} />}
           {scheduled.length > 0 && (
             <ul className="mt-4 space-y-1 text-xs">
               {scheduled.map((n) => (
@@ -246,6 +247,7 @@ export default async function SettingsPage() {
           {!liveProvider() && <p className="mt-2 text-xs text-muted">No live provider configured (set CRICKET_PROVIDER=cricapi and CRICAPI_KEY). Coverage is never claimed beyond the configured sources.</p>}
         </Section>
 
+        {user.isAdmin && (
         <Section id="audit" title="Audit log">
           <ul className="space-y-1 text-xs">
             {audit.map((a) => (
@@ -255,6 +257,7 @@ export default async function SettingsPage() {
             ))}
           </ul>
         </Section>
+        )}
       </div>
     </>
   );

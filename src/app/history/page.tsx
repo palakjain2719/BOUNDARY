@@ -3,7 +3,9 @@ import path from "node:path";
 import Link from "next/link";
 import type { Metadata } from "next";
 import { ClockBanner } from "@/components/ClockBanner";
-import { getSessionUser } from "@/lib/auth";
+import { getViewer } from "@/lib/auth";
+import { SignInCallout } from "@/components/SignInCallout";
+
 import { findMatch, loadManifest, PROCESSED_DIR } from "@/lib/data/historical";
 import { teamAbbr } from "@/lib/data/normalize";
 import { formatClock } from "@/lib/format";
@@ -24,8 +26,7 @@ const label = (id: string) => {
 };
 
 export default async function HistoryPage() {
-  const user = await getSessionUser();
-  if (!user) return null;
+  const user = await getViewer();
   const repo = getRepository(user.accessToken);
   const manifest = loadManifest();
   const rec = reconciliation();
@@ -74,7 +75,11 @@ export default async function HistoryPage() {
           <h2 id="mine" className="font-semibold">
             Your saved teams
           </h2>
-          {teams.length === 0 ? (
+          {user.guest ? (
+            <div className="mt-2">
+              <SignInCallout what="see the teams you've saved" />
+            </div>
+          ) : teams.length === 0 ? (
             <p className="mt-1 text-sm text-muted">
               None yet. Open a match and use <em>Build my XI</em>. Your team is optional — the pipeline&apos;s analysis does not depend on it.
             </p>

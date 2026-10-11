@@ -3,7 +3,7 @@ import { useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
 import type { WeightsOverview } from "@/lib/learning/weights";
 
-export function WeightsEditor({ overview }: { overview: WeightsOverview }) {
+export function WeightsEditor({ overview, canSave = true }: { overview: WeightsOverview; canSave?: boolean }) {
   const router = useRouter();
   const rec = overview.recommended.weights;
   const lastCandidate = overview.candidates[overview.candidates.length - 1];
@@ -74,7 +74,15 @@ export function WeightsEditor({ overview }: { overview: WeightsOverview }) {
         <label className="flex items-center gap-2 text-sm">
           Name <input value={name} onChange={(e) => setName(e.target.value)} className="rounded-full border border-line bg-paper px-3 py-1.5" />
         </label>
-        <button className="btn btn-primary" disabled={busy} onClick={() => call({ action: "save", competition: overview.competition, weights: w, name }).then((j) => j && setMsg({ ok: true, text: `Saved candidate. Backtest MAE on ${j.evaluation.window}: ${j.evaluation.mae} (active model ${j.evaluation.baselineMae}).` }))}>
+        {!canSave && (
+          <span className="text-sm">
+            <a className="font-semibold underline" href="/login">
+              Sign in
+            </a>{" "}
+            to save and backtest your own weights.
+          </span>
+        )}
+        <button className="btn btn-primary" disabled={busy || !canSave} onClick={() => call({ action: "save", competition: overview.competition, weights: w, name }).then((j) => j && setMsg({ ok: true, text: `Saved candidate. Backtest MAE on ${j.evaluation.window}: ${j.evaluation.mae} (active model ${j.evaluation.baselineMae}).` }))}>
           Save & backtest candidate
         </button>
         <button className="btn btn-soft" disabled={busy} onClick={() => setW(rec)}>

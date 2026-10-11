@@ -122,6 +122,7 @@ export class SupabaseRepository implements Repository {
   }
 
   async listUserTeams(userId: string, matchId?: string) {
+    if (userId === "guest") return [];
     let q = this.user.from("user_teams").select("*, user_team_players(player_id)").eq("user_id", userId).order("created_at");
     if (matchId) q = q.eq("match_id", matchId);
     const rows = must(await q, "list user teams") as Record<string, unknown>[];
@@ -154,6 +155,7 @@ export class SupabaseRepository implements Repository {
   }
 
   async listRecommendations(userId: string, matchId?: string) {
+    if (userId === "guest") return [];
     let q = this.scoped(this.db(userId).from("optimizer_recommendations").select("*, recommendation_players(player_id)"), userId).order("created_at");
     if (matchId) q = q.eq("match_id", matchId);
     const rows = must(await q, "list recommendations") as Record<string, unknown>[];
@@ -184,6 +186,7 @@ export class SupabaseRepository implements Repository {
   }
 
   async listActuals(userId: string, matchId: string) {
+    if (userId === "guest") return [];
     const rows = must(await this.scoped(this.db(userId).from("actual_player_points").select("*"), userId).eq("match_id", matchId).order("created_at"), "list actuals") as Record<string, unknown>[];
     return rows.map((a) => ({
       id: a.id as string, userId: (a.user_id as string) ?? SYSTEM_USER_ID, matchId: a.match_id as string, playerId: a.player_id as string,
@@ -210,6 +213,7 @@ export class SupabaseRepository implements Repository {
   }
 
   async listEvaluations(userId: string) {
+    if (userId === "guest") return [];
     const rows = must(await this.scoped(this.db(userId).from("team_evaluations").select("payload"), userId), "list evaluations") as { payload: TeamEvaluation }[];
     return rows.map((r) => r.payload);
   }
@@ -367,6 +371,7 @@ export class SupabaseRepository implements Repository {
   }
 
   async getNotificationPreference(userId: string) {
+    if (userId === "guest") return null;
     const r = must(await this.user.from("notification_preferences").select("*").eq("user_id", userId).maybeSingle(), "get prefs") as Record<string, unknown> | null;
     return r
       ? { userId, email: (r.email as string) ?? null, phone: (r.phone as string) ?? null, emailEnabled: r.email_enabled as boolean, smsEnabled: r.sms_enabled as boolean, updatedAt: r.updated_at as string }

@@ -2,7 +2,7 @@ import Link from "next/link";
 import type { Metadata } from "next";
 import { WeightsEditor } from "@/components/learning/WeightsEditor";
 import { IconBack } from "@/components/icons";
-import { getSessionUser } from "@/lib/auth";
+import { getViewer } from "@/lib/auth";
 import type { Competition } from "@/lib/data/types";
 import { getWeightsOverview } from "@/lib/learning/weights";
 import { getRepository } from "@/lib/store";
@@ -14,8 +14,7 @@ export const maxDuration = 60;
 export default async function WeightsPage({ searchParams }: { searchParams: Promise<{ competition?: string }> }) {
   const sp = await searchParams;
   const competition = (sp.competition === "WPL" ? "WPL" : "IPL") as Competition;
-  const user = await getSessionUser();
-  if (!user) return null;
+  const user = await getViewer();
   const overview = await getWeightsOverview(getRepository(user.accessToken), competition, user.id);
   const r = overview.recommended;
   return (
@@ -52,7 +51,7 @@ export default async function WeightsPage({ searchParams }: { searchParams: Prom
       </div>
       {competition === "WPL" && <p className="mt-3 text-sm text-warn">WPL labels are reconstructed_unverified — these comparisons are research-grade until real WPL fantasy scores are available.</p>}
       <div className="mt-6">
-        <WeightsEditor overview={overview} />
+        <WeightsEditor overview={overview} canSave={!user.guest} />
       </div>
     </div>
   );

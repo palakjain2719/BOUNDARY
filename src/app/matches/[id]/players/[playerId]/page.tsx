@@ -2,7 +2,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { IconBack } from "@/components/icons";
 import { initials } from "@/components/match/FieldView";
-import { getSessionUser } from "@/lib/auth";
+import { getViewer } from "@/lib/auth";
 import { teamAbbr } from "@/lib/data/normalize";
 import { ROLE_LABEL } from "@/lib/data/types";
 import { loadMatchView } from "@/lib/match/view";
@@ -13,8 +13,7 @@ export const dynamic = "force-dynamic";
 export default async function PlayerPage({ params }: { params: Promise<{ id: string; playerId: string }> }) {
   const { id, playerId: raw } = await params;
   const playerId = decodeURIComponent(raw);
-  const user = await getSessionUser();
-  if (!user) return null;
+  const user = await getViewer();
   const view = await loadMatchView(getRepository(user.accessToken), user, id);
   const p = view?.predictions.find((x) => x.playerId === playerId);
   if (!view || !p) notFound();

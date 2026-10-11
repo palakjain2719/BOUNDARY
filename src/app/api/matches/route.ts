@@ -14,4 +14,4 @@ export const GET = route(async ({ req, repo }) => {
     page: Number(u.searchParams.get("page") ?? 1),
   }, await getClock(repo));
   return json(result);
-});
+}, { public: true });
