@@ -301,7 +301,7 @@ export function recentWindow(clock: ClockInfo, competition: Competition): Window
 const improveModels: JobFn = async ({ repo, clock }) => {
   const out: Record<string, unknown> = {};
   for (const c of ["IPL", "WPL"] as Competition[]) {
-    const observations = (await repo.listAllEvaluations()).filter((e) => e.scope === "system" && e.competition === c).reduce((s, e) => s + (e.poolPlayers?.length ?? 0), 0);
+    const observations = (await repo.listAllEvaluations()).filter((e) => e.scope === "system" && e.origin !== "replay_backfill" && e.competition === c).reduce((s, e) => s + (e.poolPlayers?.length ?? 0), 0);
     const lastSeen = (await repo.getState<number>(`improve_obs_${c}`)) ?? -Infinity;
     if (observations - lastSeen < MIN_NEW_OBSERVATIONS && lastSeen !== -Infinity) {
       out[c] = { status: "waiting", observations, needed: MIN_NEW_OBSERVATIONS, sinceLast: observations - lastSeen };

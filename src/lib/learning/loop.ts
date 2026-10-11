@@ -145,7 +145,7 @@ export async function refreshPatterns(repo: Repository, competition: Competition
  */
 export async function refreshLivePatterns(repo: Repository, competition: Competition, evaluations: TeamEvaluation[], modelId: string) {
   const rows = evaluations
-    .filter((e) => e.scope === "system" && e.competition === competition && e.poolPlayers?.length)
+    .filter((e) => e.scope === "system" && e.origin !== "replay_backfill" && e.competition === competition && e.poolPlayers?.length)
     .flatMap((e) =>
       e.poolPlayers!.map((p) => ({
         predicted: p.predicted,

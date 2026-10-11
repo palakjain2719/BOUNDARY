@@ -61,7 +61,8 @@ export default async function LearningPage() {
         <section className="mt-6 grid gap-4 md:grid-cols-2" aria-label="Active models">
           {comps.map((c) => {
             const a = active[c];
-            const agg = aggregate(evals.filter((e) => e.competition === c));
+            const agg = aggregate(evals.filter((e) => e.competition === c && e.origin !== "replay_backfill"));
+            const replay = aggregate(evals.filter((e) => e.competition === c && e.origin === "replay_backfill"));
             const acts = activations.filter((x) => x.competition === c);
             return (
               <div key={c} className={`rounded-3xl p-5 ${c === "IPL" ? "bg-pastel-blue" : "bg-pastel-pink"}`}>
@@ -89,6 +90,27 @@ export default async function LearningPage() {
                     </div>
                   ))}
                 </dl>
+                <div className="mt-4 rounded-2xl bg-white/60 p-3">
+                  <p className="text-xs font-semibold">Replay backfill · {replay ? `${replay.matches} matches, ${replay.rows} player rows` : "not run"}</p>
+                  <p className="text-[11px] text-muted">Past {c} matches rebuilt at decision time (post-toss, features from earlier matches only), then scored. Measured, but not live.</p>
+                  {replay && (
+                    <dl className="mt-2 grid grid-cols-3 gap-2 text-center text-xs">
+                      {[
+                        ["Player MAE", f(replay.mae)],
+                        ["Bias", `${replay.bias > 0 ? "+" : ""}${f(replay.bias)}`],
+                        ["Rank ρ (avg)", f(replay.spearman, 2)],
+                        ["In 80% range", `${Math.round(replay.coverage * 100)}%`],
+                        ["Captain |error|", f(replay.captainMae)],
+                        ["Team total |error|", f(replay.teamMae)],
+                      ].map(([k, v]) => (
+                        <div key={k} className="rounded-xl bg-white/80 p-2">
+                          <dt className="text-muted">{k}</dt>
+                          <dd className="font-display text-lg">{v}</dd>
+                        </div>
+                      ))}
+                    </dl>
+                  )}
+                </div>
                 <p className="mt-2 text-[11px]">Live metrics use {c === "IPL" ? "reconstructed points after 2023 (no Dream11 labels exist for those seasons in the data)" : "reconstructed_unverified WPL points"}.</p>
                 <div className="mt-3 flex flex-wrap items-center gap-2 text-xs">
                   <span>{acts.length} activation(s) in the audit trail.</span>

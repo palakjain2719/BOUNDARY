@@ -124,6 +124,7 @@ export default async function HistoryPage() {
               <thead>
                 <tr className="text-left text-xs text-muted">
                   <th className="py-2">Match</th>
+                  <th>Type</th>
                   <th>Model</th>
                   <th>Phase</th>
                   <th className="text-right">XI predicted</th>
@@ -142,6 +143,7 @@ export default async function HistoryPage() {
                         {label(e.matchId)}
                       </Link>
                     </td>
+                    <td className="text-xs">{e.origin === "replay_backfill" ? "Replay backfill" : "Live"}</td>
                     <td className="text-xs">{e.modelId}</td>
                     <td className="text-xs">{e.decisionPhase === "post_toss" ? "after toss" : "before toss"}</td>
                     <td className="text-right">{e.optimizer?.predicted.toFixed(1) ?? "—"}</td>

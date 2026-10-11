@@ -167,6 +167,8 @@ export interface TeamEvaluation {
   actualsSource: string;
   /** System (background) evaluations of prepared analyses carry these extra diagnostics. */
   scope?: "system" | "user";
+  /** live = frozen before a real match by the pipeline; replay_backfill = rebuilt at decision time for a past match. */
+  origin?: "live" | "replay_backfill";
   competition?: Competition;
   analysisId?: string;
   modelId?: string;
