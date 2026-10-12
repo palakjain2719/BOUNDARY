@@ -26,10 +26,15 @@ export default async function MatchesPage({ searchParams }: { searchParams: SP }
   const repo = getRepository(user?.accessToken ?? null);
   const clock = await getClock(repo);
   const competition = (sp.competition ?? "all") as Competition | "all";
-  const probe = await listCatalog(repo, { tab: "upcoming", competition, q: sp.q }, clock);
-  const tab = (sp.tab as MatchStatus) ?? (probe.counts.live ? "live" : probe.counts.upcoming ? "upcoming" : "completed");
   const page = Number(sp.page ?? 1);
-  const res = await listCatalog(repo, { tab, q: sp.q, competition, season: sp.season, page, sort: sp.sort === "date" ? "date" : "suitability" }, clock);
+  const sort = sp.sort === "date" ? "date" : "suitability";
+  // When the tab is known, the count probe and the listing load in parallel.
+  const [probe, preset] = await Promise.all([
+    listCatalog(repo, { tab: "upcoming", competition, q: sp.q }, clock),
+    sp.tab ? listCatalog(repo, { tab: sp.tab as MatchStatus, q: sp.q, competition, season: sp.season, page, sort }, clock) : Promise.resolve(null),
+  ]);
+  const tab = (sp.tab as MatchStatus) ?? (probe.counts.live ? "live" : probe.counts.upcoming ? "upcoming" : "completed");
+  const res = preset ?? (await listCatalog(repo, { tab, q: sp.q, competition, season: sp.season, page, sort }, clock));
   const themes = themesForList(res.items.map((i) => i.id));
   const qs = (o: Record<string, string | number | undefined>) => {
     const p = new URLSearchParams();

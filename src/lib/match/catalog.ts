@@ -46,8 +46,7 @@ export interface CatalogResult {
 }
 
 export async function listCatalog(repo: Repository, query: CatalogQuery, clock: ClockInfo): Promise<CatalogResult> {
-  const fixtures = await repo.listFixtures();
-  const prepared = await repo.listPreparedAnalyses();
+  const [fixtures, prepared] = await Promise.all([repo.listFixtures(), repo.listPreparedAnalyses()]);
   const latest = new Map<string, PreparedAnalysis>();
   for (const a of prepared) latest.set(a.matchId, a);
   const fixtureIds = new Set(fixtures.map((f) => f.id));
