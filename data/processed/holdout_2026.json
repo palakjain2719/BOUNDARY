@@ -1,0 +1,216 @@
+{
+ "generatedAt": "2026-10-12T11:49:39.058308+00:00",
+ "rulesId": "dream11-t20-2026",
+ "results": [
+  {
+   "competition": "IPL",
+   "trainRows": 26137,
+   "trainMatches": 1169,
+   "trainCutoff": "2025-06-03",
+   "testRows": 1772,
+   "testMatches": 74,
+   "testRange": [
+    "2026-03-28",
+    "2026-05-31"
+   ],
+   "players": {
+    "Train mean (guess the average)": {
+     "split": "2026",
+     "n": 1772,
+     "mae": 37.061,
+     "rmse": 47.561,
+     "bias": -1.723,
+     "r2": -0.0013,
+     "spearman": null,
+     "matchesWithRank": 0
+    },
+    "Recency baseline": {
+     "split": "2026",
+     "n": 1772,
+     "mae": 36.26,
+     "rmse": 46.491,
+     "bias": -0.098,
+     "r2": 0.0432,
+     "spearman": 0.2101,
+     "matchesWithRank": 74,
+     "intervalCoverage80": 0.8155
+    },
+    "Ridge regression": {
+     "split": "2026",
+     "n": 1772,
+     "mae": 35.959,
+     "rmse": 46.326,
+     "bias": -1.659,
+     "r2": 0.05,
+     "spearman": 0.2105,
+     "matchesWithRank": 74,
+     "intervalCoverage80": 0.8318
+    },
+    "HistGradientBoosting": {
+     "split": "2026",
+     "n": 1772,
+     "mae": 35.814,
+     "rmse": 46.058,
+     "bias": -1.354,
+     "r2": 0.061,
+     "spearman": 0.2295,
+     "matchesWithRank": 74
+    }
+   },
+   "teams": {
+    "Train mean (guess the average)": null,
+    "Recency baseline": {
+     "matches": 74,
+     "avgTeamPoints": 786.7,
+     "avgBestPossible": 1245.0,
+     "avgPctOfBest": 62.9,
+     "avgOverlapWithBestXI": 5.92,
+     "captainInActualTop3": 18.9,
+     "avgCaptainPoints": 68.1,
+     "teamTotalAbsError": 155.2
+    },
+    "Ridge regression": {
+     "matches": 74,
+     "avgTeamPoints": 799.1,
+     "avgBestPossible": 1245.0,
+     "avgPctOfBest": 63.8,
+     "avgOverlapWithBestXI": 6.03,
+     "captainInActualTop3": 24.3,
+     "avgCaptainPoints": 76.7,
+     "teamTotalAbsError": 163.4
+    },
+    "HistGradientBoosting": {
+     "matches": 74,
+     "avgTeamPoints": 811.7,
+     "avgBestPossible": 1245.0,
+     "avgPctOfBest": 64.7,
+     "avgOverlapWithBestXI": 6.01,
+     "captainInActualTop3": 29.7,
+     "avgCaptainPoints": 80.9,
+     "teamTotalAbsError": 163.1
+    },
+    "Random valid XI (reference)": {
+     "matches": 74,
+     "avgTeamPoints": 659.1,
+     "avgBestPossible": 1245.0,
+     "avgPctOfBest": 53.0,
+     "avgOverlapWithBestXI": 5.2,
+     "captainInActualTop3": 13.2,
+     "avgCaptainPoints": 53.7,
+     "teamTotalAbsError": "\u2014"
+    }
+   },
+   "ridgeMaeByRole": {
+    "WK": 45.08,
+    "BAT": 37.42,
+    "AR": 34.56,
+    "BOWL": 32.52
+   }
+  },
+  {
+   "competition": "WPL",
+   "trainRows": 1453,
+   "trainMatches": 66,
+   "trainCutoff": "2025-03-15",
+   "testRows": 484,
+   "testMatches": 22,
+   "testRange": [
+    "2026-01-09",
+    "2026-02-05"
+   ],
+   "players": {
+    "Train mean (guess the average)": {
+     "split": "2026",
+     "n": 484,
+     "mae": 39.664,
+     "rmse": 51.598,
+     "bias": -1.289,
+     "r2": -0.0006,
+     "spearman": null,
+     "matchesWithRank": 0
+    },
+    "Recency baseline": {
+     "split": "2026",
+     "n": 484,
+     "mae": 36.715,
+     "rmse": 48.123,
+     "bias": 1.788,
+     "r2": 0.1296,
+     "spearman": 0.4252,
+     "matchesWithRank": 22,
+     "intervalCoverage80": 0.8492
+    },
+    "Ridge regression": {
+     "split": "2026",
+     "n": 484,
+     "mae": 37.81,
+     "rmse": 48.628,
+     "bias": 3.756,
+     "r2": 0.1113,
+     "spearman": 0.3588,
+     "matchesWithRank": 22,
+     "intervalCoverage80": 0.8223
+    },
+    "HistGradientBoosting": {
+     "split": "2026",
+     "n": 484,
+     "mae": 40.298,
+     "rmse": 51.582,
+     "bias": 4.575,
+     "r2": 0.0,
+     "spearman": 0.2627,
+     "matchesWithRank": 22
+    }
+   },
+   "teams": {
+    "Train mean (guess the average)": null,
+    "Recency baseline": {
+     "matches": 22,
+     "avgTeamPoints": 926.8,
+     "avgBestPossible": 1265.8,
+     "avgPctOfBest": 73.4,
+     "avgOverlapWithBestXI": 7.68,
+     "captainInActualTop3": 36.4,
+     "avgCaptainPoints": 92.0,
+     "teamTotalAbsError": 169.5
+    },
+    "Ridge regression": {
+     "matches": 22,
+     "avgTeamPoints": 901.8,
+     "avgBestPossible": 1265.8,
+     "avgPctOfBest": 72.0,
+     "avgOverlapWithBestXI": 7.18,
+     "captainInActualTop3": 40.9,
+     "avgCaptainPoints": 95.6,
+     "teamTotalAbsError": 136.2
+    },
+    "HistGradientBoosting": {
+     "matches": 22,
+     "avgTeamPoints": 854.8,
+     "avgBestPossible": 1265.8,
+     "avgPctOfBest": 67.9,
+     "avgOverlapWithBestXI": 6.59,
+     "captainInActualTop3": 31.8,
+     "avgCaptainPoints": 80.0,
+     "teamTotalAbsError": 250.2
+    },
+    "Random valid XI (reference)": {
+     "matches": 22,
+     "avgTeamPoints": 689.2,
+     "avgBestPossible": 1265.8,
+     "avgPctOfBest": 54.6,
+     "avgOverlapWithBestXI": 5.6,
+     "captainInActualTop3": 14.5,
+     "avgCaptainPoints": 51.3,
+     "teamTotalAbsError": "\u2014"
+    }
+   },
+   "ridgeMaeByRole": {
+    "WK": 40.78,
+    "BAT": 33.93,
+    "AR": 49.89,
+    "BOWL": 34.12
+   }
+  }
+ ]
+}
