@@ -3,7 +3,7 @@
  * generation or a message send. Results are cached for 5 minutes per server instance.
  */
 import { createClient } from "@supabase/supabase-js";
-import { env, isGeminiConfigured, isSupabaseConfigured } from "./env";
+import { env, geminiViaOpenRouter, isGeminiConfigured, isSupabaseConfigured, openRouterModel } from "./env";
 import { USER_AGENT } from "./providers/free-sources";
 
 export type CheckState = "working" | "failing" | "needs_setup" | "demo";
@@ -50,6 +50,16 @@ async function checkSupabase(): Promise<IntegrationCheck> {
 async function checkGemini(): Promise<IntegrationCheck> {
   const base = { name: "Gemini (explanations)", envVars: ["GEMINI_API_KEY", "GEMINI_MODEL"] };
   if (!isGeminiConfigured()) return { ...base, state: "needs_setup", detail: "Not configured. Explanations use the deterministic evidence template (works fine, zero cost).", action: "Optional: add GEMINI_API_KEY and GEMINI_MODEL." };
+  if (geminiViaOpenRouter()) {
+    try {
+      // Key lookup: no generation, no tokens.
+      const res = await timed((signal) => fetch("https://openrouter.ai/api/v1/key", { headers: { Authorization: `Bearer ${env.geminiApiKey}` }, signal }));
+      if (res.ok) return { ...base, state: "working", detail: `OpenRouter key accepted · model ${openRouterModel()}. Capped at ${process.env.GEMINI_MAX_EXPLANATIONS_PER_DAY ?? 100} explanations/day.`, action: null };
+      return { ...base, state: "failing", detail: `OpenRouter returned HTTP ${res.status}.`, action: "Check GEMINI_API_KEY (OpenRouter key)." };
+    } catch (e) {
+      return { ...base, state: "failing", detail: e instanceof Error ? e.message : String(e), action: null };
+    }
+  }
   try {
     // Model metadata lookup: no generation, no tokens.
     const res = await timed((signal) => fetch(`https://generativelanguage.googleapis.com/v1beta/models/${encodeURIComponent(env.geminiModel)}`, { headers: { "x-goog-api-key": env.geminiApiKey }, signal }));

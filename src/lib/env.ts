@@ -27,6 +27,9 @@ export const env = {
 
 export const isSupabaseConfigured = () => !!(env.supabaseUrl && env.supabaseAnonKey && env.supabaseServiceRoleKey);
 export const isGeminiConfigured = () => !!(env.geminiApiKey && env.geminiModel);
+/** An OpenRouter key (sk-or-…) in GEMINI_API_KEY routes the same Gemini Flash model through OpenRouter. */
+export const geminiViaOpenRouter = () => env.geminiApiKey.startsWith("sk-or-");
+export const openRouterModel = () => (env.geminiModel.includes("/") ? env.geminiModel : `google/${env.geminiModel}`);
 export const isDemoMode = () => !isSupabaseConfigured();
 
 export interface IntegrationStatus {

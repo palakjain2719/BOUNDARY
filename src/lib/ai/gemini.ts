@@ -3,7 +3,7 @@
  * given; it never decides team validity, scores or picks. Without credentials a deterministic template is used.
  * Model id comes from GEMINI_MODEL (check https://ai.google.dev/gemini-api/docs/models for current ids).
  */
-import { env, isGeminiConfigured } from "../env";
+import { env, geminiViaOpenRouter, isGeminiConfigured, openRouterModel } from "../env";
 import type { Repository } from "../store/types";
 import { blockForToday, tryConsume } from "./budget";
 
@@ -36,6 +36,7 @@ export function toPlainProse(md: string): string {
 export async function explainWithGemini(evidence: unknown, fallback: string, fetchImpl: typeof fetch = fetch, repo?: Repository | null): Promise<ExplanationResult> {
   if (!isGeminiConfigured()) return { text: fallback, source: "template" };
   if (!(await tryConsume("gemini_explanation", repo))) return { text: fallback, source: "template", error: "Daily Gemini explanation cap reached (zero-cost guard)" };
+  if (geminiViaOpenRouter()) return explainViaOpenRouter(evidence, fallback, fetchImpl);
   const url = `https://generativelanguage.googleapis.com/v1beta/models/${encodeURIComponent(env.geminiModel)}:generateContent`;
   const controller = new AbortController();
   const timer = setTimeout(() => controller.abort(), 12000);
@@ -59,6 +60,40 @@ export async function explainWithGemini(evidence: unknown, fallback: string, fet
     if (!text) return { text: fallback, source: "template", error: "Empty Gemini response" };
     // A truncated explanation is worse than the deterministic one.
     if (cand?.finishReason && cand.finishReason !== "STOP") return { text: fallback, source: "template", error: `Gemini stopped early (${cand.finishReason})` };
+    return { text, source: "gemini" };
+  } catch (e) {
+    return { text: fallback, source: "template", error: e instanceof Error ? e.message : String(e) };
+  } finally {
+    clearTimeout(timer);
+  }
+}
+
+/** Same prompt and safeguards, sent to Gemini Flash through OpenRouter's OpenAI-compatible API. */
+async function explainViaOpenRouter(evidence: unknown, fallback: string, fetchImpl: typeof fetch): Promise<ExplanationResult> {
+  const controller = new AbortController();
+  const timer = setTimeout(() => controller.abort(), 12000);
+  try {
+    const res = await fetchImpl("https://openrouter.ai/api/v1/chat/completions", {
+      method: "POST",
+      headers: { "Content-Type": "application/json", Authorization: `Bearer ${env.geminiApiKey}`, "X-Title": "BOUNDARY Match Optimizer" },
+      body: JSON.stringify({
+        model: openRouterModel(),
+        messages: [
+          { role: "system", content: SYSTEM },
+          { role: "user", content: `Evidence JSON:\n${JSON.stringify(evidence)}` },
+        ],
+        max_tokens: 2048,
+        reasoning: { effort: "low", exclude: true },
+      }),
+      signal: controller.signal,
+    });
+    if (res.status === 429 || res.status === 402) blockForToday("gemini_explanation");
+    if (!res.ok) return { text: fallback, source: "template", error: `OpenRouter HTTP ${res.status}` };
+    const json = (await res.json()) as { choices?: { finish_reason?: string; message?: { content?: string } }[] };
+    const choice = json.choices?.[0];
+    const text = toPlainProse(choice?.message?.content ?? "");
+    if (!text) return { text: fallback, source: "template", error: "Empty Gemini response" };
+    if (choice?.finish_reason && choice.finish_reason !== "stop") return { text: fallback, source: "template", error: `Gemini stopped early (${choice.finish_reason})` };
     return { text, source: "gemini" };
   } catch (e) {
     return { text: fallback, source: "template", error: e instanceof Error ? e.message : String(e) };
