@@ -75,12 +75,7 @@ export function WeightsEditor({ overview, canSave = true }: { overview: WeightsO
           Name <input value={name} onChange={(e) => setName(e.target.value)} className="rounded-full border border-line bg-paper px-3 py-1.5" />
         </label>
         {!canSave && (
-          <span className="text-sm">
-            <a className="font-semibold underline" href="/login">
-              Sign in
-            </a>{" "}
-            to save and backtest your own weights.
-          </span>
+          <span className="text-sm">Setting up this browser&apos;s workspace. Refresh in a moment to save and backtest your own weights.</span>
         )}
         <button className="btn btn-primary" disabled={busy || !canSave} onClick={() => call({ action: "save", competition: overview.competition, weights: w, name }).then((j) => j && setMsg({ ok: true, text: `Saved candidate. Backtest MAE on ${j.evaluation.window}: ${j.evaluation.mae} (active model ${j.evaluation.baselineMae}).` }))}>
           Save & backtest candidate

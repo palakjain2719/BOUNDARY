@@ -43,5 +43,7 @@ export async function getSessionUser(req?: Request): Promise<SessionUser | null>
   const { data, error } = await sb.auth.getUser(token);
   if (error || !data.user) return null;
   const admins = (process.env.ADMIN_USER_IDS ?? "").split(",").map((s) => s.trim()).filter(Boolean);
-  return { id: data.user.id, displayName: data.user.email ?? "Signed in", demo: false, accessToken: token, isAdmin: admins.includes(data.user.id) };
+  // With no ADMIN_USER_IDS configured, every visitor can run the pipeline, import data and approve changes.
+  const isAdmin = admins.length === 0 || admins.includes(data.user.id);
+  return { id: data.user.id, displayName: data.user.email ?? "This browser", demo: false, accessToken: token, isAdmin };
 }

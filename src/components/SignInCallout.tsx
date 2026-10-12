@@ -1,14 +1,9 @@
-import Link from "next/link";
-
-/** Shown where an action or view is personal. Shared analysis stays visible without signing in. */
+/** Shown for a personal action before this browser's private workspace is ready. */
 export function SignInCallout({ what }: { what: string }) {
   return (
     <div className="rounded-2xl border border-dashed border-line bg-paper p-4 text-sm">
       <p>
-        <Link href="/login" className="font-semibold underline">
-          Sign in
-        </Link>{" "}
-        to {what}. Everything else on this page is visible without an account.
+        Setting up this browser&apos;s private workspace so you can {what}. No sign-up needed. Refresh the page in a moment.
       </p>
     </div>
   );

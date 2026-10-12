@@ -35,14 +35,10 @@ export async function SiteHeader() {
           <Link href="/matches" className="hidden h-10 w-10 shrink-0 place-items-center sm:grid rounded-full border border-line bg-paper hover:bg-white" aria-label="Search matches">
             <IconSearch />
           </Link>
-          {user ? (
+          {user && user.displayName !== "This browser" && (
             <span className="grid h-10 w-10 shrink-0 place-items-center rounded-full bg-ink font-semibold text-white" title={user.displayName} aria-label={`Signed in as ${user.displayName}`}>
               {initials}
             </span>
-          ) : (
-            <Link href="/login" className="btn btn-primary">
-              Sign in
-            </Link>
           )}
         </div>
       </div>
