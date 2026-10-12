@@ -1,0 +1,196 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>BOUNDARY components flow</title>
+<link href="https://fonts.googleapis.com/css2?family=Archivo+Black&family=DM+Sans:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+  body { margin: 0; background: #f3ede2; font-family: "DM Sans", sans-serif; color: #141414; }
+  svg text { font-family: "DM Sans", sans-serif; }
+  .t { font-weight: 700; font-size: 17px; }
+  .d { font-size: 13px; fill: #3d3d3d; }
+  .h { font-family: "Archivo Black", sans-serif; font-size: 15px; letter-spacing: 1px; }
+</style>
+</head>
+<body>
+<svg xmlns="http://www.w3.org/2000/svg" width="1600" height="1500" viewBox="0 0 1600 1500">
+  <defs>
+    <marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse">
+      <path d="M0,0 L10,5 L0,10 z" fill="#141414"/>
+    </marker>
+    <marker id="g" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse">
+      <path d="M0,0 L10,5 L0,10 z" fill="#c2410c"/>
+    </marker>
+  </defs>
+
+  <text x="60" y="70" style="font-family:'Archivo Black';font-size:40px">BOUNDARY · Components flow</text>
+  <text x="60" y="102" class="d" style="font-size:17px">Fantasy Cricket Match Day Optimizer — how data moves from source to Aryan's team and back into learning</text>
+
+
+  <!-- Row 1: sources -->
+  <g>
+    <rect x="60" y="180" width="330" height="120" rx="18" fill="#f7c99b"/>
+    <text x="80" y="215" class="t">Cricsheet</text>
+    <text x="80" y="240" class="d">Ball-by-ball history</text>
+    <text x="80" y="260" class="d">1,243 IPL + 88 WPL matches</text>
+    <rect x="420" y="180" width="330" height="120" rx="18" fill="#f7c99b"/>
+    <text x="440" y="215" class="t">Kaggle Dream11 labels</text>
+    <text x="440" y="240" class="d">Real Dream11 points 2008–2023</text>
+    <text x="440" y="260" class="d">used to benchmark the model</text>
+    <rect x="780" y="180" width="370" height="120" rx="18" fill="#f7c99b"/>
+    <text x="800" y="215" class="t">Wikipedia + ESPNcricinfo RSS</text>
+    <text x="800" y="240" class="d">Live fixtures, toss, status</text>
+    <text x="800" y="260" class="d">free, no paid API</text>
+    <rect x="1180" y="180" width="360" height="120" rx="18" fill="#f7c99b"/>
+    <text x="1200" y="215" class="t">Open-Meteo</text>
+    <text x="1200" y="240" class="d">Match-time weather</text>
+    <text x="1200" y="260" class="d">context only</text>
+  </g>
+
+  <!-- Row 2: pipeline -->
+  <g>
+    <rect x="60" y="390" width="330" height="120" rx="18" fill="#d9cdf2"/>
+    <text x="80" y="425" class="t">discover_fixtures</text>
+    <text x="80" y="450" class="d">Find upcoming IPL / WPL matches</text>
+    <rect x="420" y="390" width="330" height="120" rx="18" fill="#d9cdf2"/>
+    <text x="440" y="425" class="t">refresh_status</text>
+    <text x="440" y="450" class="d">Track toss → live → completed</text>
+    <rect x="780" y="390" width="370" height="120" rx="18" fill="#d9cdf2"/>
+    <text x="800" y="425" class="t">prepare_analysis</text>
+    <text x="800" y="450" class="d">Predict + optimise before anyone</text>
+    <text x="800" y="470" class="d">opens the match</text>
+    <rect x="1180" y="390" width="360" height="120" rx="18" fill="#d9cdf2"/>
+    <text x="1200" y="425" class="t">collect_actuals</text>
+    <text x="1200" y="450" class="d">Results after the match</text>
+  </g>
+
+  <!-- Row 3: core -->
+  <g>
+    <rect x="60" y="600" width="250" height="150" rx="18" fill="#cfe7c2"/>
+    <text x="80" y="635" class="t">Scoring rules</text>
+    <text x="80" y="660" class="d">Official Dream11 T20</text>
+    <text x="80" y="680" class="d">2026 points, line items</text>
+    <rect x="340" y="600" width="250" height="150" rx="18" fill="#cfe7c2"/>
+    <text x="360" y="635" class="t">Features</text>
+    <text x="360" y="660" class="d">Form, venue, opponent</text>
+    <text x="360" y="680" class="d">earlier matches only</text>
+    <rect x="620" y="600" width="250" height="150" rx="18" fill="#cfe7c2"/>
+    <text x="640" y="635" class="t">Prediction model</text>
+    <text x="640" y="660" class="d">Ridge regression</text>
+    <text x="640" y="680" class="d">points + 80% range</text>
+    <rect x="900" y="600" width="300" height="150" rx="18" fill="#cfe7c2"/>
+    <text x="920" y="635" class="t">Optimizer</text>
+    <text x="920" y="660" class="d">Best XI + Captain + VC</text>
+    <text x="920" y="680" class="d">100 credits, roles, max per side</text>
+    <rect x="1230" y="600" width="310" height="150" rx="18" fill="#cfe7c2"/>
+    <text x="1250" y="635" class="t">Validator</text>
+    <text x="1250" y="660" class="d">Checks every Dream11 rule</text>
+    <text x="1250" y="680" class="d">invalid → forbidden, re-solve</text>
+  </g>
+
+  <!-- Row 4: storage + AI -->
+  <g>
+    <rect x="60" y="850" width="690" height="140" rx="18" fill="#c9dcf2"/>
+    <text x="80" y="885" class="t">Supabase (Postgres + Auth, schema "boundary")</text>
+    <text x="80" y="910" class="d">Snapshots, predictions, teams, typed actual points, evaluations, model history</text>
+    <text x="80" y="930" class="d">Row-level security · anonymous session per browser (no sign-up) · immutable versions</text>
+    <rect x="780" y="850" width="760" height="140" rx="18" fill="#c9dcf2"/>
+    <text x="800" y="885" class="t">Gemini Flash (via OpenRouter)</text>
+    <text x="800" y="910" class="d">Turns the optimizer's evidence into plain-English captain / VC reasons</text>
+    <text x="800" y="930" class="d">Never decides scores or validity · daily cap · template fallback</text>
+  </g>
+
+  <!-- Row 5: screens -->
+  <g>
+    <rect x="60" y="1060" width="280" height="160" rx="18" fill="#f5e08f"/>
+    <text x="80" y="1095" class="t">1. Choose match</text>
+    <text x="80" y="1120" class="d">Matches / Demo tab</text>
+    <text x="80" y="1140" class="d">ranked by suitability</text>
+    <rect x="370" y="1060" width="280" height="160" rx="18" fill="#f5e08f"/>
+    <text x="390" y="1095" class="t">2. See optimizer XI</text>
+    <text x="390" y="1120" class="d">Team, C/VC, reasons,</text>
+    <text x="390" y="1140" class="d">predicted score</text>
+    <rect x="680" y="1060" width="280" height="160" rx="18" fill="#f5e08f"/>
+    <text x="700" y="1095" class="t">3. Build own XI</text>
+    <text x="700" y="1120" class="d">Live rule checks, swap fixes,</text>
+    <text x="700" y="1140" class="d">auto-saved</text>
+    <rect x="990" y="1060" width="260" height="160" rx="18" fill="#f5e08f"/>
+    <text x="1010" y="1095" class="t">4. Type Dream11</text>
+    <text x="1010" y="1115" class="t">points</text>
+    <text x="1010" y="1140" class="d">after the match</text>
+    <rect x="1280" y="1060" width="260" height="160" rx="18" fill="#141414"/>
+    <text x="1300" y="1095" class="t" style="fill:#fff">5. Verdict</text>
+    <text x="1300" y="1120" class="d" style="fill:#e5e5e5">Your team vs optimizer,</text>
+    <text x="1300" y="1140" class="d" style="fill:#e5e5e5">captain check, misses</text>
+  </g>
+
+  <!-- Row 6: learn -->
+  <g>
+    <rect x="60" y="1320" width="440" height="130" rx="18" fill="#f2c3cf"/>
+    <text x="80" y="1355" class="t">Evaluation</text>
+    <text x="80" y="1380" class="d">MAE, bias, rank correlation, interval coverage,</text>
+    <text x="80" y="1400" class="d">captain error — uses typed + collected results</text>
+    <rect x="530" y="1320" width="440" height="130" rx="18" fill="#f2c3cf"/>
+    <text x="550" y="1355" class="t">Detect consistent errors</text>
+    <text x="550" y="1380" class="d">Segments with n ≥ 30, |bias| ≥ 2, |t| ≥ 2</text>
+    <text x="550" y="1400" class="d">e.g. "new players over-predicted"</text>
+    <rect x="1000" y="1320" width="540" height="130" rx="18" fill="#f2c3cf"/>
+    <text x="1020" y="1355" class="t">Suggest weight adjustments</text>
+    <text x="1020" y="1380" class="d">Backtested chronologically · promoted only if gates pass</text>
+    <text x="1020" y="1400" class="d">every change can be rolled back</text>
+  </g>
+
+  <!-- Arrows: sources -> pipeline -->
+  <g stroke="#141414" stroke-width="2.5" fill="none" marker-end="url(#a)">
+    <path d="M225 300 V385"/>
+    <path d="M585 300 V385"/>
+    <path d="M965 300 V385"/>
+    <path d="M1360 300 C1360 340 1160 350 1100 386"/>
+    <!-- pipeline chain -->
+    <path d="M390 450 H415"/>
+    <path d="M750 450 H775"/>
+    <path d="M1150 450 H1175"/>
+    <!-- prepare -> core -->
+    <path d="M900 510 C900 560 470 560 465 596"/>
+    <!-- core chain -->
+    <path d="M310 675 H335"/>
+    <path d="M590 675 H615"/>
+    <path d="M870 675 H895"/>
+    <path d="M1200 675 H1225"/>
+    <!-- validator -> storage / gemini -->
+    <path d="M1385 750 V845"/>
+    <path d="M1050 750 C1050 800 420 800 405 846"/>
+    <!-- storage -> screens -->
+    <path d="M300 990 V1055"/>
+    <path d="M1160 990 C1160 1030 520 1020 510 1056"/>
+    <!-- screens chain -->
+    <path d="M340 1140 H365"/>
+    <path d="M650 1140 H675"/>
+    <path d="M960 1140 H985"/>
+    <path d="M1250 1140 H1275"/>
+    <!-- verdict -> learn -->
+    <path d="M1410 1220 C1410 1270 300 1270 280 1316"/>
+    <path d="M500 1385 H525"/>
+    <path d="M970 1385 H995"/>
+  </g>
+  <!-- feedback loop to model -->
+  <path d="M1270 1450 V1472 H1580 V578 H745 V594" stroke="#c2410c" stroke-width="3" fill="none" marker-end="url(#g)" stroke-dasharray="10 6"/>
+  <text x="1290" y="1494" class="d" style="fill:#c2410c;font-weight:700">approved changes update the model ↺</text>
+  <!-- Lane labels (drawn last, over arrows) -->
+  <g class="h">
+    <rect x="50" y="141" width="162" height="26" rx="6" fill="#f3ede2"/>
+    <text x="60" y="160" fill="#6b6b6b">① DATA SOURCES</text>
+    <rect x="50" y="351" width="550" height="26" rx="6" fill="#f3ede2"/>
+    <text x="60" y="370" fill="#6b6b6b">② BACKGROUND PIPELINE (Vercel Cron + GitHub Actions)</text>
+    <rect x="50" y="561" width="417" height="26" rx="6" fill="#f3ede2"/>
+    <text x="60" y="580" fill="#6b6b6b">③ CORE LOGIC (deterministic TypeScript)</text>
+    <rect x="50" y="811" width="162" height="26" rx="6" fill="#f3ede2"/>
+    <text x="60" y="830" fill="#6b6b6b">④ STORAGE + AI</text>
+    <rect x="50" y="1021" width="499" height="26" rx="6" fill="#f3ede2"/>
+    <text x="60" y="1040" fill="#6b6b6b">⑤ SCREENS — WHAT ARYAN DOES (Next.js on Vercel)</text>
+    <rect x="50" y="1281" width="91" height="26" rx="6" fill="#f3ede2"/>
+    <text x="60" y="1300" fill="#6b6b6b">⑥ LEARN</text>
+  </g>
+</svg>
+</body>
+</html>
