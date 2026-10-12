@@ -212,9 +212,11 @@ export class SupabaseRepository implements Repository {
     return e;
   }
 
-  async listEvaluations(userId: string) {
+  async listEvaluations(userId: string, matchId?: string) {
     if (userId === "guest") return [];
-    const rows = must(await this.scoped(this.db(userId).from("team_evaluations").select("payload"), userId), "list evaluations") as { payload: TeamEvaluation }[];
+    let q = this.scoped(this.db(userId).from("team_evaluations").select("payload"), userId);
+    if (matchId) q = q.eq("match_id", matchId);
+    const rows = must(await q, "list evaluations") as { payload: TeamEvaluation }[];
     return rows.map((r) => r.payload);
   }
 

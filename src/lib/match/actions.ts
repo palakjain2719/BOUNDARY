@@ -136,14 +136,18 @@ export interface ReviewData {
 }
 
 export async function getReview(repo: Repository, user: SessionUser, matchId: string, opts: { ownActualsOnly?: boolean } = {}): Promise<ReviewData> {
-  const teams = await repo.listUserTeams(user.id, matchId);
-  const userRecs = await repo.listRecommendations(user.id, matchId);
+  const [teams, userRecs, own, fixture, versions] = await Promise.all([
+    repo.listUserTeams(user.id, matchId),
+    repo.listRecommendations(user.id, matchId),
+    repo.listActuals(user.id, matchId),
+    repo.getFixture(matchId),
+    repo.listPreparedAnalyses(matchId),
+  ]);
   const userTeam = teams[teams.length - 1] ?? null;
   // Prefer the user's own on-demand recommendation; otherwise the pipeline's frozen pre-start recommendation.
   let recommendation: OptimizerRecommendation | null = userRecs[userRecs.length - 1] ?? null;
   if (!recommendation) {
-    const f = await repo.getFixture(matchId);
-    const versions = await repo.listPreparedAnalyses(matchId);
+    const f = fixture;
     const frozen = versions.filter((v) => !f?.startTimeUtc || Date.parse(v.clockAt) < Date.parse(f.startTimeUtc)).pop();
     if (frozen?.recommendationId) recommendation = (await repo.listRecommendations(SYSTEM_USER_ID, matchId)).find((r) => r.id === frozen.recommendationId) ?? null;
   }
@@ -159,7 +163,6 @@ export async function getReview(repo: Repository, user: SessionUser, matchId: st
     }
   }
   // The user's own entries take precedence; otherwise use the actuals the pipeline collected.
-  const own = await repo.listActuals(user.id, matchId);
   const actuals = own.length || opts.ownActualsOnly ? own : await repo.listActuals(SYSTEM_USER_ID, matchId);
   const unionPlayerIds = [...new Set([...(userTeam?.playerIds ?? []), ...(recommendation?.playerIds ?? [])])];
   const rules = merged ? getRules(merged.rulesId) : null;

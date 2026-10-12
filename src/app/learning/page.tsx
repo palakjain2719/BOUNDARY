@@ -42,12 +42,18 @@ export default async function LearningPage() {
   const repo = getRepository(user.accessToken);
   const bench = loadBenchmark();
   const models = builtinModels();
-  const evals = (await repo.listEvaluations(SYSTEM_USER_ID)).filter((e) => e.scope === "system");
-  const patterns = await repo.listPatterns();
-  const proposals = [...(await repo.listProposals())].reverse();
-  const activations = await repo.listActivations();
   const comps: Competition[] = ["IPL", "WPL"];
-  const active = Object.fromEntries(await Promise.all(comps.map(async (c) => [c, await getActiveModel(repo, c)] as const)));
+  // Independent reads run in parallel (each is a database round trip).
+  const [allEvals, patterns, proposalsRaw, activations, activeList] = await Promise.all([
+    repo.listEvaluations(SYSTEM_USER_ID),
+    repo.listPatterns(),
+    repo.listProposals(),
+    repo.listActivations(),
+    Promise.all(comps.map(async (c) => [c, await getActiveModel(repo, c)] as const)),
+  ]);
+  const evals = allEvals.filter((e) => e.scope === "system");
+  const proposals = [...proposalsRaw].reverse();
+  const active = Object.fromEntries(activeList);
 
   return (
     <>

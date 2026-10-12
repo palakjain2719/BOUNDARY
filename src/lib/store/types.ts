@@ -389,7 +389,7 @@ export interface Repository {
   listActuals(userId: string, matchId: string): Promise<ActualPoint[]>;
 
   saveEvaluation(e: TeamEvaluation): Promise<TeamEvaluation>;
-  listEvaluations(userId: string): Promise<TeamEvaluation[]>;
+  listEvaluations(userId: string, matchId?: string): Promise<TeamEvaluation[]>;
 
   replacePatterns(competition: Competition, source: ErrorPattern["source"], p: ErrorPattern[]): Promise<void>;
   listPatterns(competition?: Competition): Promise<ErrorPattern[]>;

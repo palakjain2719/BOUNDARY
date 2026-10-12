@@ -113,7 +113,7 @@ export class LocalRepository implements Repository {
     this.flush();
     return e;
   }
-  async listEvaluations(userId: string) { return structuredClone(this.data.evaluations.filter((e) => e.userId === userId)); }
+  async listEvaluations(userId: string, matchId?: string) { return structuredClone(this.data.evaluations.filter((e) => e.userId === userId && (!matchId || e.matchId === matchId))); }
 
   async replacePatterns(competition: Competition, source: ErrorPattern["source"], p: ErrorPattern[]) {
     this._data.patterns = this.data.patterns.filter((x) => !(x.competition === competition && x.source === source)).concat(structuredClone(p));

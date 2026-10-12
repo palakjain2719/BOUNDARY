@@ -41,18 +41,20 @@ function Section({ id, title, children }: { id: string; title: string; children:
 export default async function SettingsPage() {
   const user = await getViewer();
   const repo = getRepository(user.accessToken);
-  const clock = await getClock(repo);
-  const runs = await repo.listJobRuns({ limit: 40 });
-  const pref = await repo.getNotificationPreference(user.id);
-  const scheduled = user.guest ? [] : await repo.listScheduledNotifications({ userId: user.id });
-  const audit = user.isAdmin ? await repo.listAudit(25) : [];
-  const fixtures = await repo.listFixtures();
+  // Independent reads run in parallel (each is a database round trip).
+  const [clock, runs, pref, scheduled, audit, fixtures, checks, search, explain] = await Promise.all([
+    getClock(repo),
+    repo.listJobRuns({ limit: 40 }),
+    repo.getNotificationPreference(user.id),
+    user.guest ? Promise.resolve([]) : repo.listScheduledNotifications({ userId: user.id }),
+    user.isAdmin ? repo.listAudit(25) : Promise.resolve([]),
+    repo.listFixtures(),
+    runIntegrationChecks(),
+    usedToday("google_search", repo),
+    usedToday("gemini_explanation", repo),
+  ]);
   const providers = [replayProvider(), liveProvider()].filter(Boolean);
-  const checks = await runIntegrationChecks();
-  const usage = {
-    search: await usedToday("google_search", repo),
-    explain: await usedToday("gemini_explanation", repo),
-  };
+  const usage = { search, explain };
 
   return (
     <>
