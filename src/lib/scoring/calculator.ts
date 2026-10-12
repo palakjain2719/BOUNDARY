@@ -44,9 +44,14 @@ export function inBand(value: number, b: Band): boolean {
   return true;
 }
 
-function thresholdsReached(value: number, list: Threshold[], mode: "highest_only" | "cumulative"): Threshold[] {
-  const reached = [...list].sort((a, b) => a.at - b.at).filter((t) => value >= t.at);
+function thresholdsReached(value: number, list: Threshold[], mode: "highest_only" | "cumulative" | "cumulative_top_exclusive"): Threshold[] {
+  const sorted = [...list].sort((a, b) => a.at - b.at);
+  const reached = sorted.filter((t) => value >= t.at);
   if (mode === "cumulative") return reached;
+  if (mode === "cumulative_top_exclusive") {
+    const top = sorted[sorted.length - 1];
+    return top && value >= top.at ? [top] : reached;
+  }
   return reached.length ? [reached[reached.length - 1]] : [];
 }
 
@@ -95,15 +100,16 @@ export function scorePlayer(input: ScoringInput, role: PlayerRole, rules: RulesC
   for (const t of thresholdsReached(input.runs, b.milestones, b.milestoneMode)) {
     add(`batting.milestone_${t.at}`, "batting", t.label, 1, t.points, t.points, `Reached ${t.at} (scored ${input.runs})`);
   }
-  if (b.milestoneMode === "highest_only") {
+  if (b.milestoneMode !== "cumulative") {
     const reached = b.milestones.filter((t) => input.runs >= t.at);
-    if (reached.length > 1) {
+    const awarded = thresholdsReached(input.runs, b.milestones, b.milestoneMode);
+    if (reached.length > awarded.length) {
       omitted.push({
         code: "batting.lower_milestones",
-        reason: `Only the highest milestone is awarded (highest_only); lower milestones ${reached
-          .slice(0, -1)
+        reason: `Milestones ${reached
+          .filter((t) => !awarded.includes(t))
           .map((t) => t.at)
-          .join(", ")} not added`,
+          .join(", ")} not added (${b.milestoneMode === "highest_only" ? "only the highest milestone counts" : "a century earns only the century bonus"})`,
       });
     }
   }

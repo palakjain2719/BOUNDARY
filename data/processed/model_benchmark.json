@@ -1,5 +1,5 @@
 {
- "generatedAt": "2026-10-11T15:15:27.296731+00:00",
+ "generatedAt": "2026-10-11T20:09:28.453826+00:00",
  "competition": "IPL",
  "target": "Kaggle Dream11 Total_FP (high-confidence player mapping only)",
  "split": {
@@ -71,24 +71,24 @@
    "validation": {
     "split": "validation",
     "n": 2458,
-    "mae": 25.927,
-    "rmse": 33.038,
-    "bias": 0.002,
-    "r2": 0.0164,
-    "spearman": 0.1684,
+    "mae": 29.957,
+    "rmse": 35.963,
+    "bias": 13.089,
+    "r2": -0.1654,
+    "spearman": 0.1752,
     "matchesWithRank": 120,
-    "intervalCoverage80": 0.8405
+    "intervalCoverage80": 0.8735
    },
    "test": {
     "split": "test",
     "n": 3118,
-    "mae": 26.967,
-    "rmse": 34.5,
-    "bias": -0.929,
-    "r2": -0.0014,
-    "spearman": 0.0978,
+    "mae": 30.732,
+    "rmse": 37.131,
+    "bias": 12.148,
+    "r2": -0.16,
+    "spearman": 0.0931,
     "matchesWithRank": 148,
-    "intervalCoverage80": 0.8143
+    "intervalCoverage80": 0.8717
    }
   },
   "Ridge regression": {
@@ -96,23 +96,23 @@
    "validation": {
     "split": "validation",
     "n": 2458,
-    "mae": 25.741,
-    "rmse": 32.753,
-    "bias": -0.13,
-    "r2": 0.0334,
-    "spearman": 0.1751,
+    "mae": 25.742,
+    "rmse": 32.743,
+    "bias": -0.075,
+    "r2": 0.0339,
+    "spearman": 0.1787,
     "matchesWithRank": 120
    },
    "test": {
     "split": "test",
     "n": 3118,
-    "mae": 26.463,
-    "rmse": 34.093,
-    "bias": -1.642,
-    "r2": 0.0221,
-    "spearman": 0.1294,
+    "mae": 26.469,
+    "rmse": 34.083,
+    "bias": -1.58,
+    "r2": 0.0226,
+    "spearman": 0.1286,
     "matchesWithRank": 148,
-    "intervalCoverage80": 0.8477
+    "intervalCoverage80": 0.8461
    }
   },
   "Random Forest": {
@@ -120,21 +120,21 @@
    "validation": {
     "split": "validation",
     "n": 2458,
-    "mae": 25.83,
-    "rmse": 32.78,
-    "bias": 0.236,
-    "r2": 0.0317,
-    "spearman": 0.1711,
+    "mae": 25.812,
+    "rmse": 32.756,
+    "bias": 0.252,
+    "r2": 0.0332,
+    "spearman": 0.1792,
     "matchesWithRank": 120
    },
    "test": {
     "split": "test",
     "n": 3118,
-    "mae": 26.622,
-    "rmse": 34.153,
-    "bias": -1.299,
-    "r2": 0.0187,
-    "spearman": 0.1121,
+    "mae": 26.697,
+    "rmse": 34.207,
+    "bias": -1.215,
+    "r2": 0.0156,
+    "spearman": 0.1092,
     "matchesWithRank": 148
    }
   },
@@ -143,21 +143,21 @@
    "validation": {
     "split": "validation",
     "n": 2458,
-    "mae": 25.759,
-    "rmse": 32.776,
-    "bias": -0.088,
-    "r2": 0.032,
-    "spearman": 0.171,
+    "mae": 25.766,
+    "rmse": 32.734,
+    "bias": -0.053,
+    "r2": 0.0344,
+    "spearman": 0.1852,
     "matchesWithRank": 120
    },
    "test": {
     "split": "test",
     "n": 3118,
-    "mae": 26.498,
-    "rmse": 34.102,
-    "bias": -1.642,
-    "r2": 0.0216,
-    "spearman": 0.127,
+    "mae": 26.538,
+    "rmse": 34.119,
+    "bias": -1.453,
+    "r2": 0.0206,
+    "spearman": 0.1235,
     "matchesWithRank": 148
    }
   }
@@ -168,66 +168,66 @@
    {
     "segment": "AR",
     "n": 459,
-    "mae": 28.392,
-    "bias": -1.649
+    "mae": 28.386,
+    "bias": -1.632
    },
    {
     "segment": "BAT",
     "n": 1088,
-    "mae": 25.596,
-    "bias": -3.015
+    "mae": 25.605,
+    "bias": -2.946
    },
    {
     "segment": "BOWL",
     "n": 1233,
-    "mae": 26.072,
-    "bias": -0.328
+    "mae": 26.08,
+    "bias": -0.276
    },
    {
     "segment": "WK",
     "n": 338,
-    "mae": 28.064,
-    "bias": -2.0
+    "mae": 28.06,
+    "bias": -1.874
    }
   ],
   "bySeason": [
    {
     "segment": "2022",
     "n": 1533,
-    "mae": 26.465,
-    "bias": -2.416
+    "mae": 26.471,
+    "bias": -2.331
    },
    {
     "segment": "2023",
     "n": 1585,
-    "mae": 26.462,
-    "bias": -0.892
+    "mae": 26.466,
+    "bias": -0.855
    }
   ],
   "byHistory": [
    {
     "segment": "0",
     "n": 81,
-    "mae": 23.797,
-    "bias": 6.23
+    "mae": 23.826,
+    "bias": 6.356
    },
    {
     "segment": "1-5",
     "n": 369,
-    "mae": 24.182,
-    "bias": -1.496
+    "mae": 24.203,
+    "bias": -1.472
    },
    {
     "segment": "6-20",
     "n": 596,
-    "mae": 25.322,
-    "bias": -1.507
+    "mae": 25.327,
+    "bias": -1.474
    },
    {
     "segment": "21+",
     "n": 2072,
-    "mae": 27.302,
-    "bias": -2.014
+    "mae": 27.304,
+    "bias": -1.941
    }
   ]
  },
@@ -238,9 +238,9 @@
    "trainMean": {
     "split": "2023/24",
     "n": 485,
-    "mae": 28.227,
-    "rmse": 37.37,
-    "bias": -0.282,
+    "mae": 37.594,
+    "rmse": 49.321,
+    "bias": -0.394,
     "r2": -0.0001,
     "spearman": null,
     "matchesWithRank": 0
@@ -248,13 +248,13 @@
    "recencyBaseline": {
     "split": "2023/24",
     "n": 485,
-    "mae": 26.337,
-    "rmse": 35.668,
-    "bias": 0.853,
-    "r2": 0.0889,
-    "spearman": 0.3521,
+    "mae": 34.672,
+    "rmse": 46.601,
+    "bias": 1.318,
+    "r2": 0.1072,
+    "spearman": 0.3851,
     "matchesWithRank": 22,
-    "intervalCoverage80": 0.8557
+    "intervalCoverage80": 0.8598
    }
   },
   {
@@ -263,23 +263,23 @@
    "trainMean": {
     "split": "2024/25",
     "n": 484,
-    "mae": 29.581,
-    "rmse": 38.218,
-    "bias": -2.469,
-    "r2": -0.0042,
+    "mae": 40.012,
+    "rmse": 52.168,
+    "bias": -3.28,
+    "r2": -0.004,
     "spearman": null,
     "matchesWithRank": 0
    },
    "recencyBaseline": {
     "split": "2024/25",
     "n": 484,
-    "mae": 26.862,
-    "rmse": 34.443,
-    "bias": -1.01,
-    "r2": 0.1844,
-    "spearman": 0.4002,
+    "mae": 35.583,
+    "rmse": 46.154,
+    "bias": -1.388,
+    "r2": 0.2142,
+    "spearman": 0.4392,
     "matchesWithRank": 22,
-    "intervalCoverage80": 0.8492
+    "intervalCoverage80": 0.8512
    }
   },
   {
@@ -288,26 +288,163 @@
    "trainMean": {
     "split": "2025/26",
     "n": 484,
-    "mae": 29.516,
-    "rmse": 38.268,
-    "bias": -1.062,
-    "r2": -0.0008,
+    "mae": 39.664,
+    "rmse": 51.598,
+    "bias": -1.289,
+    "r2": -0.0006,
     "spearman": null,
     "matchesWithRank": 0
    },
    "recencyBaseline": {
     "split": "2025/26",
     "n": 484,
-    "mae": 27.653,
-    "rmse": 35.946,
-    "bias": 1.218,
-    "r2": 0.117,
-    "spearman": 0.3851,
+    "mae": 36.715,
+    "rmse": 48.123,
+    "bias": 1.788,
+    "r2": 0.1296,
+    "spearman": 0.4252,
     "matchesWithRank": 22,
-    "intervalCoverage80": 0.8368
+    "intervalCoverage80": 0.8492
    }
   }
  ],
+ "currentRules": {
+  "rulesId": "dream11-t20-2026",
+  "target": "reconstructed points (official T20 rules)",
+  "rows": {
+   "train": 16632,
+   "validation": 2640,
+   "test": 3396
+  },
+  "results": {
+   "Train mean baseline": {
+    "kind": "train_mean",
+    "validation": {
+     "split": "validation",
+     "n": 2640,
+     "mae": 33.776,
+     "rmse": 43.389,
+     "bias": -0.443,
+     "r2": -0.0001,
+     "spearman": null,
+     "matchesWithRank": 0
+    },
+    "test": {
+     "split": "test",
+     "n": 3396,
+     "mae": 35.306,
+     "rmse": 45.705,
+     "bias": -2.157,
+     "r2": -0.0022,
+     "spearman": null,
+     "matchesWithRank": 0
+    },
+    "recent": {
+     "split": "2024+",
+     "n": 5241,
+     "mae": 35.928,
+     "rmse": 46.179,
+     "bias": -1.845,
+     "r2": -0.0016,
+     "spearman": null,
+     "matchesWithRank": 0
+    }
+   },
+   "Recency baseline (recency-baseline-v1)": {
+    "kind": "recency_baseline",
+    "validation": {
+     "split": "validation",
+     "n": 2640,
+     "mae": 33.474,
+     "rmse": 42.894,
+     "bias": 1.283,
+     "r2": 0.0226,
+     "spearman": 0.1949,
+     "matchesWithRank": 120,
+     "intervalCoverage80": 0.8473
+    },
+    "test": {
+     "split": "test",
+     "n": 3396,
+     "mae": 35.477,
+     "rmse": 45.454,
+     "bias": -0.577,
+     "r2": 0.0088,
+     "spearman": 0.1273,
+     "matchesWithRank": 148,
+     "intervalCoverage80": 0.8201
+    },
+    "recent": {
+     "split": "2024+",
+     "n": 5241,
+     "mae": 35.444,
+     "rmse": 45.339,
+     "bias": 0.284,
+     "r2": 0.0345,
+     "spearman": 0.1936,
+     "matchesWithRank": 219,
+     "intervalCoverage80": 0.8273
+    }
+   },
+   "Ridge regression": {
+    "kind": "ridge",
+    "validation": {
+     "split": "validation",
+     "n": 2640,
+     "mae": 32.989,
+     "rmse": 42.455,
+     "bias": 0.144,
+     "r2": 0.0425,
+     "spearman": 0.2104,
+     "matchesWithRank": 120
+    },
+    "test": {
+     "split": "test",
+     "n": 3396,
+     "mae": 34.617,
+     "rmse": 44.977,
+     "bias": -2.529,
+     "r2": 0.0295,
+     "spearman": 0.1599,
+     "matchesWithRank": 148,
+     "intervalCoverage80": 0.8433
+    },
+    "recent": {
+     "split": "2024+",
+     "n": 5241,
+     "mae": 34.879,
+     "rmse": 45.144,
+     "bias": -2.406,
+     "r2": 0.0428,
+     "spearman": 0.1947,
+     "matchesWithRank": 219
+    }
+   },
+   "HistGradientBoosting": {
+    "kind": "hist_gradient_boosting",
+    "validation": {
+     "split": "validation",
+     "n": 2640,
+     "mae": 33.001,
+     "rmse": 42.386,
+     "bias": 0.072,
+     "r2": 0.0456,
+     "spearman": 0.2141,
+     "matchesWithRank": 120
+    },
+    "test": {
+     "split": "test",
+     "n": 3396,
+     "mae": 34.834,
+     "rmse": 45.063,
+     "bias": -2.324,
+     "r2": 0.0258,
+     "spearman": 0.138,
+     "matchesWithRank": 148
+    }
+   }
+  }
+ },
  "caveats": [
   "Weak signal: improvements over the train-mean baseline are small; this is not production-grade forecasting.",
   "Eligible-player pools, credits and roles are not in the historical data; roles are inferred.",

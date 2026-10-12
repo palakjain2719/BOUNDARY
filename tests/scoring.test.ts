@@ -160,3 +160,35 @@ describe("team scoring: multipliers applied once", () => {
     expect(toBasePoints(60, false, 2)).toBe(60);
   });
 });
+
+describe("official Dream11 T20 rules (2026)", () => {
+  const t20 = getRules("dream11-t20-2026");
+  const tab = getRules("dream11-tata-ipl-tab-2026");
+  it("is the default for both competitions", async () => {
+    const { defaultRulesFor } = await import("@/lib/scoring/registry");
+    expect(defaultRulesFor("IPL").id).toBe("dream11-t20-2026");
+    expect(defaultRulesFor("WPL").id).toBe("dream11-t20-2026");
+  });
+  it("stacks 25/50/75 bonuses below a century", () => {
+    const s = scorePlayer(stats({ batted: true, runs: 80, ballsFaced: 60 }), "BAT", t20);
+    expect([25, 50, 75].map((m) => item(s, `batting.milestone_${m}`)?.points)).toEqual([4, 8, 12]);
+  });
+  it("awards only the century bonus at 100+", () => {
+    const s = scorePlayer(stats({ batted: true, runs: 104, ballsFaced: 60 }), "BAT", t20);
+    expect(item(s, "batting.milestone_100")?.points).toBe(16);
+    expect(item(s, "batting.milestone_75")).toBeUndefined();
+    expect(s.omitted.some((o) => o.code === "batting.lower_milestones")).toBe(true);
+  });
+  it("scores wickets at 30 with LBW/bowled bonus and dot balls", () => {
+    const s = scorePlayer(stats({ ballsBowled: 24, runsConceded: 30, wickets: 3, lbwBowledWickets: 1, dotBalls: 10 }), "BOWL", t20);
+    expect(item(s, "bowling.wickets")?.points).toBe(90);
+    expect(item(s, "bowling.lbw_bowled")?.points).toBe(8);
+    expect(item(s, "bowling.haul_3")?.points).toBe(4);
+    expect(item(s, "bowling.dot_balls")?.points).toBe(10);
+  });
+  it("uses the smaller TATA IPL TAB scale when selected", () => {
+    const s = scorePlayer(stats({ ballsBowled: 24, runsConceded: 30, wickets: 3, lbwBowledWickets: 1, dotBalls: 10 }), "BOWL", tab);
+    expect(item(s, "bowling.wickets")?.points).toBe(75);
+    expect(item(s, "bowling.lbw_bowled")).toBeUndefined();
+  });
+});

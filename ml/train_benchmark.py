@@ -153,6 +153,49 @@ def main() -> int:
     }
     (ARTIFACTS / "ridge-ipl-v1.json").write_text(json.dumps(artifact, indent=1))
 
+    # ---- Current official rules (dream11-t20-2026): target = reconstructed points from Cricsheet events ----
+    # Same chronological split. This is the model served for live matches, because Aryan's entered points
+    # follow the current rules, not the 2008-2023 legacy labels.
+    R = "target_reconstructed"
+    cur = ipl[ipl["split"].isin(["train", "validation", "test"])].copy()
+    ctr, cva, cte = (cur[cur.split == s] for s in ("train", "validation", "test"))
+    current: dict[str, dict] = {}
+    cmean = float(ctr[R].mean())
+    for d in (cva, cte):
+        d["pred_train_mean"] = cmean
+    current["Train mean baseline"] = {"kind": "train_mean", "validation": metrics(cva, "pred_train_mean", R, "validation"), "test": metrics(cte, "pred_train_mean", R, "test")}
+    current["Recency baseline (recency-baseline-v1)"] = {"kind": "recency_baseline", "validation": metrics(cva, "baseline_pred", R, "validation", "baseline_p10", "baseline_p90"), "test": metrics(cte, "baseline_pred", R, "test", "baseline_p10", "baseline_p90")}
+    cridge = Pipeline([("imp", SimpleImputer(strategy="median")), ("sc", StandardScaler()), ("m", Ridge(alpha=10.0))])
+    cridge.fit(X(ctr), ctr[R])
+    cva["pred_ridge"] = cridge.predict(X(cva))
+    cte["pred_ridge"] = cridge.predict(X(cte))
+    cres = cva["pred_ridge"] - cva[R]
+    crole = {r: round(float(cres[cva.role_inferred == r].std()), 3) for r in ["WK", "BAT", "AR", "BOWL"] if (cva.role_inferred == r).sum() > 30}
+    crole["ALL"] = round(float(cres.std()), 3)
+    csig = cte.role_inferred.map(crole).fillna(crole["ALL"])
+    cte["ridge_p10"] = cte["pred_ridge"] - 1.2816 * csig
+    cte["ridge_p90"] = cte["pred_ridge"] + 1.2816 * csig
+    current["Ridge regression"] = {"kind": "ridge", "validation": metrics(cva, "pred_ridge", R, "validation"), "test": metrics(cte, "pred_ridge", R, "test", "ridge_p10", "ridge_p90")}
+    chgb = Pipeline([("m", HistGradientBoostingRegressor(max_iter=300, learning_rate=0.05, min_samples_leaf=40, l2_regularization=1.0, random_state=7))])
+    chgb.fit(X(ctr), ctr[R])
+    cva["pred_hgb"] = chgb.predict(X(cva))
+    cte["pred_hgb"] = chgb.predict(X(cte))
+    current["HistGradientBoosting"] = {"kind": "hist_gradient_boosting", "validation": metrics(cva, "pred_hgb", R, "validation"), "test": metrics(cte, "pred_hgb", R, "test")}
+    # Out-of-period check on the impact-player era (2024+), which none of the models saw.
+    cpost = ipl[ipl["split"] == "post_label_period"].copy()
+    if len(cpost):
+        cpost["pred_train_mean"] = cmean
+        cpost["pred_ridge"] = cridge.predict(X(cpost))
+        current["Train mean baseline"]["recent"] = metrics(cpost, "pred_train_mean", R, "2024+")
+        current["Recency baseline (recency-baseline-v1)"]["recent"] = metrics(cpost, "baseline_pred", R, "2024+", "baseline_p10", "baseline_p90")
+        current["Ridge regression"]["recent"] = metrics(cpost, "pred_ridge", R, "2024+")
+    ci, cs, cm = cridge.named_steps["imp"], cridge.named_steps["sc"], cridge.named_steps["m"]
+    (ARTIFACTS / "ridge-ipl-v2.json").write_text(json.dumps({
+        "modelId": "ridge-ipl-v2", "features": FEATURES, "medians": [float(x) for x in ci.statistics_], "means": [float(x) for x in cs.mean_],
+        "scales": [float(x) for x in cs.scale_], "coef": [float(x) for x in cm.coef_], "intercept": float(cm.intercept_), "residualStdByRole": crole,
+        "trainingCutoff": str(ctr.match_date.max()), "target": "Reconstructed points, official Dream11 T20 rules (dream11-t20-2026)",
+    }, indent=1))
+
     best = min((k for k in results), key=lambda k: results[k]["validation"]["mae"])
     best_kind = results[best]["kind"]
     pred_col = {"train_mean": "pred_train_mean", "recency_baseline": "baseline_pred"}.get(best_kind, f"pred_{best_kind}")
@@ -188,6 +231,7 @@ def main() -> int:
         "selectedOnValidation": best,
         "testSegmentsForSelected": seg,
         "wplResearch": wpl_research,
+        "currentRules": {"rulesId": "dream11-t20-2026", "target": "reconstructed points (official T20 rules)", "rows": {"train": int(len(ctr)), "validation": int(len(cva)), "test": int(len(cte))}, "results": current},
         "caveats": [
             "Weak signal: improvements over the train-mean baseline are small; this is not production-grade forecasting.",
             "Eligible-player pools, credits and roles are not in the historical data; roles are inferred.",
@@ -208,6 +252,11 @@ def main() -> int:
     tm = results["Train mean baseline"]["test"]["mae"]
     bt = results[best]["test"]["mae"]
     lines += ["", f"Selected on validation: **{best}**. Test MAE {bt} vs train-mean {tm} ({100 * (tm - bt) / tm:.2f}% better).", "",
+              "## Current official rules (dream11-t20-2026) — served model", "",
+              "Target: points reconstructed from Cricsheet events under the official T20 rules (larger point scale). Same chronological split.", "",
+              "| Model | Val MAE | Test MAE | Test RMSE | Test bias | Test R² | Test Spearman | Test 80% PI coverage |", "|---|---:|---:|---:|---:|---:|---:|---:|",
+              *[f"| {k} | {v['validation']['mae']} | {v['test']['mae']} | {v['test']['rmse']} | {v['test']['bias']} | {v['test']['r2']} | {v['test']['spearman']} | {v['test'].get('intervalCoverage80', '—')} |" for k, v in sorted(current.items(), key=lambda kv: kv[1]['test']['mae'])],
+              "",
               "## WPL research check (reconstructed_unverified target — not a fantasy-label evaluation)", "",
               "| Season | Train-mean MAE | Recency baseline MAE | Baseline 80% PI coverage |", "|---|---:|---:|---:|"]
     for w in wpl_research:

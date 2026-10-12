@@ -69,6 +69,8 @@ function solveForced(
   useCredits: boolean,
   excluded: Set<number>,
   forbidden: Set<string> = new Set(),
+  /** Objective already achieved by another captain pair; only strictly better lineups are searched for. */
+  incumbent = -Infinity,
 ): { set: number[]; objective: number; nodes: number } | null {
   const n = cands.length;
   const order = [...Array(n).keys()]
@@ -103,7 +105,7 @@ function solveForced(
   const prefix = [0];
   for (const i of order) prefix.push(prefix[prefix.length - 1] + values[i]);
 
-  const st: SolveState = { best: -Infinity, bestSet: null, nodes: 0 };
+  const st: SolveState = { best: incumbent, bestSet: null, nodes: 0 };
   const chosen: number[] = [...forced];
   const need0 = rules.squadSize - forced.length;
   if (need0 < 0) return null;
@@ -178,19 +180,30 @@ export function optimizeTeam(cands: Candidate[], rules: TeamRules, opts: Optimiz
   let best: { set: number[]; objective: number; c: number; v: number } | null = null;
   let nodes = 0;
   let pairs = 0;
+  // Optimistic bound per pair (its leadership bonus + the best 11 values) lets most pairs be skipped once a
+  // good lineup is known; pairs are tried best-bound first and each search only looks for strict improvements,
+  // so the result is identical to solving every pair.
+  const topSum = [...values.keys()].filter((i) => !excluded.has(i)).map((i) => values[i]).sort((a, b) => b - a).slice(0, rules.squadSize).reduce((s, x) => s + x, 0);
+  const pairList: { c: number; v: number; ub: number; order: number }[] = [];
   for (const c of leaders) {
     for (const v of leaders) {
       if (c === v) continue;
-      pairs++;
-      const bonus = new Map([
-        [c, (opts.captainMultiplier - 1) * values[c]],
-        [v, (opts.viceCaptainMultiplier - 1) * values[v]],
-      ]);
-      const r = solveForced(cands, values, [c, v], bonus, rules, useCredits, excluded, forbidden);
-      if (!r) continue;
-      nodes += r.nodes;
-      if (!best || r.objective > best.objective + 1e-9) best = { set: r.set, objective: r.objective, c, v };
+      const ub = topSum + Math.max(0, (opts.captainMultiplier - 1) * values[c]) + Math.max(0, (opts.viceCaptainMultiplier - 1) * values[v]);
+      pairList.push({ c, v, ub, order: pairList.length });
     }
+  }
+  pairList.sort((a, b) => b.ub - a.ub || a.order - b.order);
+  for (const { c, v, ub } of pairList) {
+    pairs++;
+    if (best && ub <= best.objective + 1e-9) continue;
+    const bonus = new Map([
+      [c, (opts.captainMultiplier - 1) * values[c]],
+      [v, (opts.viceCaptainMultiplier - 1) * values[v]],
+    ]);
+    const r = solveForced(cands, values, [c, v], bonus, rules, useCredits, excluded, forbidden, best?.objective ?? -Infinity);
+    if (!r) continue;
+    nodes += r.nodes;
+    if (!best || r.objective > best.objective + 1e-9) best = { set: r.set, objective: r.objective, c, v };
   }
   if (!best) return null;
 

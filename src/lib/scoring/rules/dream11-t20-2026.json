@@ -1,0 +1,182 @@
+{
+  "id": "dream11-t20-2026",
+  "version": "1.0.0",
+  "name": "Dream11 T20 (official, as published Jan 2026)",
+  "competitions": [
+    "IPL",
+    "WPL"
+  ],
+  "format": "T20",
+  "effectiveFrom": "2024-01-01",
+  "effectiveTo": null,
+  "officialSourceUrl": "https://web.archive.org/web/20260117160601/https://www.dream11.com/fantasy-cricket/point-system",
+  "verifiedAt": null,
+  "status": "reviewed",
+  "provenance": "Transcribed from Dream11's official point-system page (T20 tab) as archived by the Internet Archive on 2026-01-17 (the live page returned 'Server down' on 2026-10-12). Values reviewed line by line; not yet validated against real Dream11 match scores.",
+  "notes": [
+    "Official note: a player scoring a century only gets the century bonus (no 25/50/75 bonus). Lower milestones (25, 50, 75) stack.",
+    "Official note: runs from overthrows count; an overthrow boundary gives no Boundary Bonus (Cricsheet marks these as non-boundary, which the ingest respects).",
+    "Official note: a direct hit is by the only fielder to touch the ball; otherwise the last 2 fielders get 6 each. Cricsheet does not mark direct hits: one named fielder = direct.",
+    "Official note: more than 3 catches still earns the 3-catch bonus only once.",
+    "Wicket-haul bonuses (3/4/5) are applied highest-only here; the page does not say whether they stack. Check against a real scorecard.",
+    "The same page has a separate 'TATA IPL' tab with different, older-style values (kept as config dream11-tata-ipl-tab-2026). Which one applies to IPL daily contests should be confirmed from real entered points (the review page compares both).",
+    "Super Over events are excluded from all fantasy stats."
+  ],
+  "participation": {
+    "announcedXI": 4,
+    "substitutePlayed": 4
+  },
+  "batting": {
+    "run": 1,
+    "boundaryBonus": 4,
+    "sixBonus": 6,
+    "milestones": [
+      {
+        "at": 25,
+        "points": 4,
+        "label": "25-run bonus"
+      },
+      {
+        "at": 50,
+        "points": 8,
+        "label": "Half-century bonus"
+      },
+      {
+        "at": 75,
+        "points": 12,
+        "label": "75-run bonus"
+      },
+      {
+        "at": 100,
+        "points": 16,
+        "label": "Century bonus"
+      }
+    ],
+    "milestoneMode": "cumulative_top_exclusive",
+    "duck": -2,
+    "duckExemptRoles": [
+      "BOWL"
+    ]
+  },
+  "bowling": {
+    "wicket": 30,
+    "lbwBowledBonus": 8,
+    "haulBonuses": [
+      {
+        "at": 3,
+        "points": 4,
+        "label": "3-wicket bonus"
+      },
+      {
+        "at": 4,
+        "points": 8,
+        "label": "4-wicket bonus"
+      },
+      {
+        "at": 5,
+        "points": 12,
+        "label": "5-wicket bonus"
+      }
+    ],
+    "haulMode": "highest_only",
+    "maiden": 12,
+    "dotBall": 1
+  },
+  "fielding": {
+    "catch": 8,
+    "catchBonus": {
+      "at": 3,
+      "points": 4,
+      "label": "3-catch bonus"
+    },
+    "stumping": 12,
+    "runOutDirect": 12,
+    "runOutIndirect": 6
+  },
+  "strikeRate": {
+    "minBalls": 10,
+    "exemptRoles": [
+      "BOWL"
+    ],
+    "bands": [
+      {
+        "gt": 170,
+        "points": 6,
+        "label": "Strike rate above 170"
+      },
+      {
+        "gt": 150,
+        "lte": 170,
+        "points": 4,
+        "label": "Strike rate 150.01\u2013170"
+      },
+      {
+        "gte": 130,
+        "lte": 150,
+        "points": 2,
+        "label": "Strike rate 130\u2013150"
+      },
+      {
+        "gte": 60,
+        "lte": 70,
+        "points": -2,
+        "label": "Strike rate 60\u201370"
+      },
+      {
+        "gte": 50,
+        "lt": 60,
+        "points": -4,
+        "label": "Strike rate 50\u201359.99"
+      },
+      {
+        "lt": 50,
+        "points": -6,
+        "label": "Strike rate below 50"
+      }
+    ]
+  },
+  "economy": {
+    "minBalls": 12,
+    "bands": [
+      {
+        "lt": 5,
+        "points": 6,
+        "label": "Economy below 5"
+      },
+      {
+        "gte": 5,
+        "lt": 6,
+        "points": 4,
+        "label": "Economy 5\u20135.99"
+      },
+      {
+        "gte": 6,
+        "lte": 7,
+        "points": 2,
+        "label": "Economy 6\u20137"
+      },
+      {
+        "gte": 10,
+        "lte": 11,
+        "points": -2,
+        "label": "Economy 10\u201311"
+      },
+      {
+        "gt": 11,
+        "lte": 12,
+        "points": -4,
+        "label": "Economy 11.01\u201312"
+      },
+      {
+        "gt": 12,
+        "points": -6,
+        "label": "Economy above 12"
+      }
+    ]
+  },
+  "multipliers": {
+    "captain": 2,
+    "viceCaptain": 1.5
+  },
+  "superOver": "excluded"
+}

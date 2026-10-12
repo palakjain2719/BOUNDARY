@@ -11,6 +11,7 @@ import { decideProposal, backtestProposal, rollback } from "@/lib/learning/loop"
 import { loadMatchView } from "@/lib/match/view";
 import { getActiveModel } from "@/lib/models/registry";
 import ridge from "@/lib/models/artifacts/ridge-ipl-v1.json";
+import ridge2 from "@/lib/models/artifacts/ridge-ipl-v2.json";
 import { getTeamRules } from "@/lib/optimizer/rules";
 import { validateTeam } from "@/lib/optimizer/validate";
 import { runSimulation, runTick } from "@/lib/pipeline/jobs";
@@ -42,6 +43,7 @@ describe.sequential("acceptance: autonomous end-to-end flow", () => {
     expect(Object.keys(b.results)).toEqual(expect.arrayContaining(["Ridge regression", "Random Forest", "HistGradientBoosting", "Train mean baseline"]));
     expect(b.selectedOnValidation).toBeTruthy();
     expect(ridge.trainingCutoff <= "2019-12-31").toBe(true);
+    expect(ridge2.trainingCutoff <= "2019-12-31").toBe(true);
   });
 
   it("3. a supported upcoming match is discovered automatically", async () => {

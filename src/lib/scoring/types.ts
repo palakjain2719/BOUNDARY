@@ -42,8 +42,11 @@ export interface RulesConfig {
     boundaryBonus: number;
     sixBonus: number;
     milestones: Threshold[];
-    /** highest_only: only the largest milestone reached is awarded. cumulative: every milestone reached. */
-    milestoneMode: "highest_only" | "cumulative";
+    /**
+     * highest_only: only the largest milestone reached. cumulative: every milestone reached.
+     * cumulative_top_exclusive: lower milestones stack, but reaching the top one (e.g. a century) awards only it.
+     */
+    milestoneMode: "highest_only" | "cumulative" | "cumulative_top_exclusive";
     duck: number;
     duckExemptRoles: PlayerRole[];
   };

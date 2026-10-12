@@ -4,7 +4,8 @@
  * points and evaluate. Everything is tagged origin = "replay_backfill" and excluded from live patterns and
  * model-promotion counts. Idempotent: matches already backfilled are skipped.
  *
- * Usage: npx tsx scripts/backfill-replay.ts --season 2026 [--competition IPL|WPL] [--limit N]
+ * Usage: npx tsx scripts/backfill-replay.ts --season 2026 [--competition IPL|WPL] [--limit N] [--force]
+ * --force rebuilds matches already backfilled (e.g. after a rules or model change); new actual rows supersede old ones.
  * Gemini is disabled for the backfill (template explanations) to use no API quota.
  */
 process.env.GEMINI_API_KEY = "";
@@ -26,6 +27,7 @@ const arg = (n: string) => {
 const season = arg("season") ?? "2026";
 const only = arg("competition") as Competition | undefined;
 const limit = Number(arg("limit") ?? Infinity);
+const force = process.argv.includes("--force");
 
 (async () => {
   const repo = getRepository(null);
@@ -37,7 +39,7 @@ const limit = Number(arg("limit") ?? Infinity);
     const matches = loadCompetition(c).matches.filter((m) => m.date.startsWith(season.slice(0, 4)) || m.season === season || m.season.endsWith(season.slice(2)));
     for (const m of matches) {
       if (n >= limit) break;
-      if (done.has(m.id)) continue;
+      if (done.has(m.id) && !force) continue;
       const t0 = Date.now();
       const ws = await buildWorkspace(repo, m.id, { phase: "post_toss" });
       if (!ws) continue;
@@ -61,7 +63,7 @@ const limit = Number(arg("limit") ?? Infinity);
         source: "reconstructed", verification: "reconstructed_unverified", rulesId: snap.rulesId, createdAt: now,
       }));
       for (const p of snap.pool) if (!seen.has(p.playerId)) actuals.push({ id: crypto.randomUUID(), userId: SYSTEM_USER_ID, matchId: m.id, playerId: p.playerId, enteredValue: 0, includesMultiplier: false, basePoints: 0, source: "reconstructed", verification: "reconstructed_unverified", rulesId: null, createdAt: now });
-      if (!(await repo.listActuals(SYSTEM_USER_ID, m.id)).length) await repo.addActuals(actuals);
+      if (force || !(await repo.listActuals(SYSTEM_USER_ID, m.id)).length) await repo.addActuals(actuals);
       const ev = evaluateSystem({ snapshot: snap, recommendation: built.recommendation, actuals: await repo.listActuals(SYSTEM_USER_ID, m.id), multipliers: getRules(snap.rulesId).multipliers, analysisId: analysis.id });
       await repo.saveEvaluation({ ...ev, origin: "replay_backfill" });
       n++;
