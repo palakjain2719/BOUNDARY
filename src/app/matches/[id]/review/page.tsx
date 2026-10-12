@@ -5,6 +5,8 @@ import { ClockBanner } from "@/components/ClockBanner";
 import { LoopRibbon } from "@/components/LoopRibbon";
 import { IconBack } from "@/components/icons";
 import { ActualsForm } from "@/components/review/ActualsForm";
+import { DemoVerdict } from "@/components/review/DemoVerdict";
+import { ActionButton } from "@/components/match/ActionButton";
 import { PredVsActualChart, type RoleBar } from "@/components/review/PredVsActualChart";
 import { PlayerButton, PlayerModalProvider } from "@/components/player/PlayerModal";
 import { getViewer } from "@/lib/auth";
@@ -47,8 +49,9 @@ function SideCard({ title, side, tone }: { title: string; side: TeamEvaluationSi
   );
 }
 
-export default async function ReviewPage({ params }: { params: Promise<{ id: string }> }) {
+export default async function ReviewPage({ params, searchParams }: { params: Promise<{ id: string }>; searchParams: Promise<{ demo?: string }> }) {
   const { id } = await params;
+  const demo = (await searchParams).demo === "1";
   const user = await getViewer();
   const repo = getRepository(user.accessToken);
   const clock = await getClock(repo);
@@ -86,6 +89,11 @@ export default async function ReviewPage({ params }: { params: Promise<{ id: str
     <PlayerModalProvider matchId={id} predictions={review.snapshot?.predictions ?? []} captainId={review.recommendation?.captainId} viceCaptainId={review.recommendation?.viceCaptainId}>
       <ClockBanner />
       <div className="mx-auto max-w-7xl px-4 pt-6 sm:px-6">
+        {demo && (
+          <Link href="/demo" className="mr-4 inline-flex items-center gap-1 text-sm font-semibold hover:underline">
+            <IconBack size={16} /> Demo
+          </Link>
+        )}
         <Link href={`/matches/${id}`} className="inline-flex items-center gap-1 text-sm text-muted hover:text-ink">
           <IconBack size={16} /> {teamAbbr(m.team1)} vs {teamAbbr(m.team2)}
         </Link>
@@ -97,6 +105,43 @@ export default async function ReviewPage({ params }: { params: Promise<{ id: str
           {sources.length ? sources.map((s) => <span key={s} className="chip bg-pastel-yellow">Actuals: {s}</span>) : <span className="chip bg-pastel-pink">No actual points yet</span>}
           {sources.some((s) => s.includes("reconstructed")) && <span className="text-muted">Reconstructed = calculated from ball-by-ball events with the versioned rules; not official Dream11 totals.</span>}
         </p>
+
+        {demo && (
+          <>
+            {review.userTeam && !review.recommendation && !user.guest && (
+              <div className="card mt-6 flex flex-wrap items-center justify-between gap-3 p-5 text-sm">
+                <p>Generate the optimizer&apos;s XI for this match (built at toss time from earlier matches only) so it can be compared with yours.</p>
+                <ActionButton url={`/api/matches/${id}/optimize`} body={{ phase: "post_toss" }} label="Generate optimizer XI" busyLabel="Optimising…" />
+              </div>
+            )}
+            {ev?.user && ev.optimizer ? (
+              <DemoVerdict ev={ev} />
+            ) : review.userTeam ? null : (
+              <div className="card mt-6 p-5 text-sm">
+                Build your XI first, then come back here.{" "}
+                <Link className="font-semibold underline" href={`/matches/${id}?view=mine&phase=post_toss&demo=1`}>
+                  Build your XI
+                </Link>
+              </div>
+            )}
+            {!user.guest && review.unionPlayerIds.length > 0 && (
+              <section className="card mt-4 p-5" aria-labelledby="enter-points">
+                <h2 id="enter-points" className="font-display text-2xl">
+                  Type the Dream11 points
+                </h2>
+                <p className="mt-1 text-sm text-muted">Each player in your XI and the optimizer&apos;s XI, once. Enter base points (without the captain/vice-captain multiplier) unless you choose otherwise below.</p>
+                <div className="mt-3">
+                  <ActualsForm
+                    key={`${review.unionPlayerIds.join(",")}:${review.actuals.length}`}
+                    matchId={id}
+                    rows={review.unionPlayerIds.map((pid) => ({ playerId: pid, name: names.get(pid) ?? pid, current: latest.get(pid)?.basePoints ?? null }))}
+                    canLoad={review.canLoad}
+                  />
+                </div>
+              </section>
+            )}
+          </>
+        )}
 
         <div className="mt-6 grid gap-4 md:grid-cols-2">
           <SideCard title="Optimizer team" side={ev?.optimizer ?? system?.optimizer ?? null} tone="bg-pastel-blue" />
@@ -183,7 +228,7 @@ export default async function ReviewPage({ params }: { params: Promise<{ id: str
             <SignInCallout what="enter actual points or compare your own team" />
           </div>
         )}
-        {!user.guest && review.unionPlayerIds.length > 0 && (
+        {!demo && !user.guest && review.unionPlayerIds.length > 0 && (
           <details className="mt-4" open={!review.actuals.length}>
             <summary className="cursor-pointer text-sm font-semibold">Enter or correct actual points</summary>
             <div className="mt-2">

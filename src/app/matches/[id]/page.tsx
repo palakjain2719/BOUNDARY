@@ -23,7 +23,7 @@ import { FONT_VAR, themeFor } from "@/lib/themes/match-themes";
 
 export const dynamic = "force-dynamic";
 type Params = Promise<{ id: string }>;
-type SP = Promise<{ view?: string; phase?: string }>;
+type SP = Promise<{ view?: string; phase?: string; demo?: string }>;
 
 export async function generateMetadata({ params }: { params: Params }): Promise<Metadata> {
   return { title: `Match ${(await params).id}` };
@@ -55,7 +55,7 @@ export default async function MatchPage({ params, searchParams }: { params: Para
   const locked = m.status !== "upcoming" && m.origin !== "cricsheet_replay";
   const href = (o: Record<string, string | undefined>) => {
     const q = new URLSearchParams();
-    for (const [k, v] of Object.entries({ view: tab === "optimizer" ? undefined : tab, phase: sp.phase, ...o })) if (v) q.set(k, v);
+    for (const [k, v] of Object.entries({ view: tab === "optimizer" ? undefined : tab, phase: sp.phase, demo: sp.demo, ...o })) if (v) q.set(k, v);
     const s = q.toString();
     return `/matches/${id}${s ? `?${s}` : ""}`;
   };
@@ -152,6 +152,26 @@ export default async function MatchPage({ params, searchParams }: { params: Para
           </aside>
 
           <section aria-label="Teams" className="order-1 min-w-0 space-y-4 lg:order-2">
+            {sp.demo === "1" && (
+              <div className="flex flex-wrap items-center justify-between gap-3 rounded-2xl bg-pastel-yellow p-4 text-sm">
+                <p>
+                  <strong>Demo:</strong>{" "}
+                  {lastTeam
+                    ? `Your XI is saved (captain ${byId.get(lastTeam.captainId)?.name ?? "—"}). Compare it with the Optimizer XI tab, then enter the Dream11 points.`
+                    : "Pick 11 players, then a captain (2×) and vice-captain (1.5×), and save. Your predicted score updates as you pick."}
+                </p>
+                <div className="flex gap-2">
+                  <Link href="/demo" className="btn">
+                    Back to demo
+                  </Link>
+                  {lastTeam && (
+                    <Link href={`/matches/${id}/review?demo=1`} className="btn btn-primary">
+                      Next: enter Dream11 points →
+                    </Link>
+                  )}
+                </div>
+              </div>
+            )}
             <nav className="flex flex-wrap gap-2" aria-label="Workspace views">
               {[
                 { k: "optimizer", l: "Optimizer XI" },

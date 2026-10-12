@@ -53,7 +53,7 @@ export function ActualsForm({ matchId, rows, canLoad }: { matchId: string; rows:
             <input
               inputMode="decimal"
               className="w-20 rounded-lg border border-line bg-white px-2 py-1 text-right"
-              value={values[r.playerId]}
+              value={values[r.playerId] ?? ""}
               onChange={(e) => setValues({ ...values, [r.playerId]: e.target.value })}
               aria-label={`Actual points for ${r.name}`}
             />
