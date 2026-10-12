@@ -1,6 +1,5 @@
 "use client";
 import { useState } from "react";
-import { useRouter } from "next/navigation";
 
 interface Row {
   playerId: string;
@@ -10,7 +9,6 @@ interface Row {
 
 /** Manual entry of actual Dream11 points for the union of both lineups (each player once). */
 export function ActualsForm({ matchId, rows, canLoad }: { matchId: string; rows: Row[]; canLoad: { reconstructed: boolean; kaggle: boolean } }) {
-  const router = useRouter();
   const [values, setValues] = useState<Record<string, string>>(Object.fromEntries(rows.map((r) => [r.playerId, r.current == null ? "" : String(r.current)])));
   const [incl, setIncl] = useState<"no" | "yes" | "">("");
   const [msg, setMsg] = useState<{ ok: boolean; text: string } | null>(null);
@@ -23,7 +21,8 @@ export function ActualsForm({ matchId, rows, canLoad }: { matchId: string; rows:
     setBusy(false);
     if (res.ok) {
       setMsg({ ok: true, text: "Saved. History is append-only; the latest entry per player is used." });
-      router.refresh();
+      // Full reload so the comparison is always recomputed from the stored entries.
+      window.location.reload();
     } else setMsg({ ok: false, text: j.error ?? `HTTP ${res.status}` });
   };
   const submit = (e: React.FormEvent) => {

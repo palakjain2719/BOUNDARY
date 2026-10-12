@@ -135,7 +135,7 @@ export interface ReviewData {
   canLoad: { reconstructed: boolean; kaggle: boolean };
 }
 
-export async function getReview(repo: Repository, user: SessionUser, matchId: string): Promise<ReviewData> {
+export async function getReview(repo: Repository, user: SessionUser, matchId: string, opts: { ownActualsOnly?: boolean } = {}): Promise<ReviewData> {
   const teams = await repo.listUserTeams(user.id, matchId);
   const userRecs = await repo.listRecommendations(user.id, matchId);
   const userTeam = teams[teams.length - 1] ?? null;
@@ -160,7 +160,7 @@ export async function getReview(repo: Repository, user: SessionUser, matchId: st
   }
   // The user's own entries take precedence; otherwise use the actuals the pipeline collected.
   const own = await repo.listActuals(user.id, matchId);
-  const actuals = own.length ? own : await repo.listActuals(SYSTEM_USER_ID, matchId);
+  const actuals = own.length || opts.ownActualsOnly ? own : await repo.listActuals(SYSTEM_USER_ID, matchId);
   const unionPlayerIds = [...new Set([...(userTeam?.playerIds ?? []), ...(recommendation?.playerIds ?? [])])];
   const rules = merged ? getRules(merged.rulesId) : null;
   const evaluation = merged && actuals.length && rules ? evaluateMatch({ userId: user.id, snapshot: merged, userTeam, recommendation, actuals, multipliers: rules.multipliers }) : null;

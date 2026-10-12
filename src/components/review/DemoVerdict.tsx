@@ -59,7 +59,8 @@ export function DemoVerdict({ ev }: { ev: TeamEvaluation }) {
         : `The optimizer's team won by ${pts(-diff)} points (${pts(o.actual)} vs ${pts(u.actual)}).`;
 
   const why: string[] = [];
-  why.push(
+  if (shared.length === 11) why.push("Your XI was identical to the optimizer's, so only the captain and vice-captain choices could make a difference.");
+  else why.push(
     `${shared.length} player${shared.length === 1 ? " was" : "s were"} in both teams, so the result came down to the ${11 - shared.length} different pick${11 - shared.length === 1 ? "" : "s"}: yours scored ${pts(sum(onlyYou))}, the optimizer's scored ${pts(sum(onlyOpt))} (base points).`,
   );
   if (capU) why.push(capU.text);

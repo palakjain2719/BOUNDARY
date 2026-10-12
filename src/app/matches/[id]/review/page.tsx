@@ -72,7 +72,8 @@ export default async function ReviewPage({ params, searchParams }: { params: Pro
       </>
     );
   }
-  const review = await getReview(repo, user, id);
+  // Demo: the verdict uses only the points the user typed, never the app's own calculated points.
+  const review = await getReview(repo, user, id, { ownActualsOnly: demo });
   const system: TeamEvaluation | undefined = (await repo.listEvaluations(SYSTEM_USER_ID)).find((e) => e.matchId === id);
   const ev = review.evaluation;
   const pool = system?.poolPlayers ?? [];
