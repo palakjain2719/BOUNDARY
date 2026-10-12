@@ -105,7 +105,53 @@ export function TeamBuilder(p: Props) {
     if (!cap) issues.push("Choose a captain (2×)");
     if (!vc) issues.push("Choose a vice-captain (1.5×)");
   }
-  for (const x of hard) issues.push(x.message);
+  const over = Math.round((credits - p.teamRules.creditCap) * 10) / 10;
+  for (const x of hard) {
+    if (x.code === "credit_cap") issues.push(`Too expensive: your team costs ${credits.toFixed(1)} credits but the limit is ${p.teamRules.creditCap}. Remove ${over} credits by swapping a pricier player for a cheaper one.`);
+    else if (x.code === "team_max") issues.push(`${x.message}. Swap one of them for a player from the other side.`);
+    else if (x.code === "role_max") issues.push(`${x.message}. Swap one for another role.`);
+    else issues.push(x.message);
+  }
+  // Credit fix: greedy same-role swaps (fewest projected points lost per credit saved) until under the cap.
+  const swaps: { out: string; inn: string; loss: number; save: number }[] = [];
+  if (over > 0) {
+    const team = [...ids];
+    let left = over;
+    for (let k = 0; k < 8 && left > 1e-9; k++) {
+      let best: (typeof swaps)[number] | null = null;
+      for (const sid of team) {
+        const sp = p.pool.find((x) => x.playerId === sid);
+        if (!sp || sp.credits == null || swaps.some((w) => w.inn === sid)) continue;
+        for (const c of p.pool) {
+          if (team.includes(c.playerId) || c.role !== sp.role || c.credits == null || c.credits >= sp.credits) continue;
+          if (c.team !== sp.team && team.filter((id) => p.pool.find((x) => x.playerId === id)?.team === c.team).length >= p.teamRules.maxPerRealTeam) continue;
+          const save = sp.credits - c.credits;
+          const loss = (byId.get(sid)?.mean ?? 0) - (byId.get(c.playerId)?.mean ?? 0);
+          const score = Math.max(loss, 0) / Math.min(save, left);
+          if (!best || score < Math.max(best.loss, 0) / Math.min(best.save, left)) best = { out: sid, inn: c.playerId, loss, save };
+        }
+      }
+      if (!best) break;
+      swaps.push(best);
+      team[team.indexOf(best.out)] = best.inn;
+      left -= best.save;
+    }
+    if (left > 1e-9) swaps.length = 0; // no complete fix found
+  }
+  const applySwaps = (list: typeof swaps) => {
+    setStatus(null);
+    let next = [...ids];
+    let c = cap;
+    let v2 = vc;
+    for (const w of list) {
+      next = next.map((x) => (x === w.out ? w.inn : x));
+      if (c === w.out) c = w.inn;
+      if (v2 === w.out) v2 = w.inn;
+    }
+    setIds(next);
+    setCap(c);
+    setVc(v2);
+  };
   const ready = full && hard.length === 0 && !!cap && !!vc;
 
   // Auto-save: keep the draft in this browser, and save to the server once the team is valid.
@@ -172,6 +218,24 @@ export function TeamBuilder(p: Props) {
                   <li key={x}>{x}</li>
                 ))}
               </ul>
+              {swaps.length > 0 && (
+                <div className="mt-2 rounded-xl bg-pastel-blue/60 p-3">
+                  <p className="text-xs font-semibold">
+                    Quick fix: {swaps.length} swap{swaps.length === 1 ? "" : "s"} gets you to {(credits - swaps.reduce((t, w) => t + w.save, 0)).toFixed(1)} credits, costing{" "}
+                    {swaps.reduce((t, w) => t + w.loss, 0).toFixed(1)} projected pts
+                  </p>
+                  <ul className="mt-1 text-xs">
+                    {swaps.map((w) => (
+                      <li key={w.out}>
+                        {byId.get(w.out)?.name} → {byId.get(w.inn)?.name} (saves {w.save.toFixed(1)} cr)
+                      </li>
+                    ))}
+                  </ul>
+                  <button type="button" className="btn btn-primary mt-2" onClick={() => applySwaps(swaps)}>
+                    Apply {swaps.length === 1 ? "swap" : `all ${swaps.length} swaps`}
+                  </button>
+                </div>
+              )}
             </>
           )}
         </div>
