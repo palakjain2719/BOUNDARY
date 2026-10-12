@@ -7,6 +7,7 @@ const LINKS = [
   { href: "/matches", label: "Matches" },
   { href: "/history", label: "My Teams" },
   { href: "/learning", label: "Performance" },
+  { href: "/components-map", label: "Components" },
   { href: "/play", label: "Play Cricket" },
   { href: "/settings", label: "Settings" },
 ];
