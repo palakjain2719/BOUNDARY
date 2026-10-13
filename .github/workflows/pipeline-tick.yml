@@ -1,5 +1,7 @@
 # Calls the deployed pipeline every 15 minutes (works on any Vercel plan).
-# Set repository secrets: APP_URL (e.g. https://your-app.vercel.app) and CRON_SECRET.
+# Repository secret needed: CRON_SECRET (same value as the CRON_SECRET env var in Vercel).
+# Optional secret APP_URL; defaults to the production URL.
+# Without CRON_SECRET the job skips cleanly instead of failing (Vercel Cron still runs the pipeline daily).
 name: pipeline-tick
 on:
   schedule:
@@ -9,9 +11,18 @@ jobs:
   tick:
     runs-on: ubuntu-latest
     timeout-minutes: 5
+    env:
+      CRON_SECRET: ${{ secrets.CRON_SECRET }}
+      APP_URL: ${{ secrets.APP_URL || 'https://boundary-match-optimizer.vercel.app' }}
     steps:
       - name: Run one pipeline tick
         run: |
-          code=$(curl -s -o response.json -w "%{http_code}" -H "Authorization: Bearer ${{ secrets.CRON_SECRET }}" "${{ secrets.APP_URL }}/api/cron/pipeline")
+          if [ -z "$CRON_SECRET" ]; then
+            echo "::notice::CRON_SECRET repository secret is not set; skipping this tick."
+            exit 0
+          fi
+          code=$(curl -s -o response.json -w "%{http_code}" --max-time 240 -H "Authorization: Bearer $CRON_SECRET" "$APP_URL/api/cron/pipeline")
           cat response.json
+          echo
+          echo "HTTP $code"
           test "$code" = "200"
